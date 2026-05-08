@@ -18,5 +18,8 @@ public partial class CertificationTrack
     public string? Description { get; set; }
 
     [InverseProperty("Track")]
+    public virtual ICollection<TrackCourse> TrackCourses { get; set; } = new List<TrackCourse>();
+
+    [InverseProperty("Track")]
     public virtual ICollection<TraineeCertification> TraineeCertifications { get; set; } = new List<TraineeCertification>();
 }

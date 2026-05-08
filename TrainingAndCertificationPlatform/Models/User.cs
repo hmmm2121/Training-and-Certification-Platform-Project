@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TrainingAndCertificationPlatform.Models;
 
-[Index("Email", Name = "UQ__Users__A9D10534668305D3", IsUnique = true)]
+[Index("Email", Name = "UQ__Users__A9D10534612210BC", IsUnique = true)]
 public partial class User
 {
     [Key]
@@ -32,6 +32,9 @@ public partial class User
 
     [InverseProperty("Instructor")]
     public virtual ICollection<InstructorAvailability> InstructorAvailabilities { get; set; } = new List<InstructorAvailability>();
+
+    [InverseProperty("Instructor")]
+    public virtual ICollection<InstructorSubject> InstructorSubjects { get; set; } = new List<InstructorSubject>();
 
     [InverseProperty("User")]
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();

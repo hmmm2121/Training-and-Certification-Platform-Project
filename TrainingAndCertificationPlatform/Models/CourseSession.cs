@@ -25,6 +25,9 @@ public partial class CourseSession
 
     public int MaxCapacity { get; set; }
 
+    [StringLength(100)]
+    public string Status { get; set; } = null!;
+
     [ForeignKey("CourseId")]
     [InverseProperty("CourseSessions")]
     public virtual Course Course { get; set; } = null!;

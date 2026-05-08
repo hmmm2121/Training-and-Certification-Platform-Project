@@ -41,4 +41,7 @@ public partial class Course
     [ForeignKey("SubjectId")]
     [InverseProperty("Courses")]
     public virtual Subject Subject { get; set; } = null!;
+
+    [InverseProperty("Course")]
+    public virtual ICollection<TrackCourse> TrackCourses { get; set; } = new List<TrackCourse>();
 }

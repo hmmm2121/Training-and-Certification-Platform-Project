@@ -19,6 +19,10 @@ public partial class Payment
     [Column(TypeName = "datetime")]
     public DateTime? PaidAt { get; set; }
 
+    public DateOnly DueDate { get; set; }
+
+    public bool IsOverdue { get; set; }
+
     [ForeignKey("EnrollmentId")]
     [InverseProperty("Payments")]
     public virtual Enrollment Enrollment { get; set; } = null!;
