@@ -1,0 +1,47 @@
+﻿@model TrainingAndCertificationPlatform.ViewModels.CertificationProgressViewModel
+
+@{
+    ViewData["Title"] = "Certification Progress";
+}
+
+<h1>Certification Progress</h1>
+
+<h4>@Model.TraineeName</h4>
+<p><strong>Certification Track:</strong> @Model.TrackName</p>
+
+@if (Model.IsEligible)
+{
+    <div class="alert alert-success">
+        Eligible for certification
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">
+        Not eligible yet
+    </div>
+}
+
+<h5>Required Courses</h5>
+<ul>
+    @foreach (var course in Model.RequiredCourses)
+    {
+        <li>@course</li>
+    }
+</ul>
+
+<h5>Completed Courses</h5>
+<ul>
+    @foreach (var course in Model.CompletedCourses)
+    {
+        <li>@course</li>
+    }
+</ul>
+
+<h5>Missing Courses</h5>
+<ul>
+    @foreach (var course in Model.MissingCourses)
+    {
+        <li>@course</li>
+    }
+</ul>
