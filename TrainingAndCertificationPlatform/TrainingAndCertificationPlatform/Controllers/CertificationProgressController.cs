@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using TrainingAndCertificationPlatform.Data;
 using TrainingAndCertificationPlatform.ViewModels;
 
 namespace TrainingAndCertificationPlatform.Controllers
 {
+    //[Authorize(Roles = "Trainee,Training Coordinator")]
     public class CertificationProgressController : Controller
     {
         private readonly TrainAndCertContext _context;

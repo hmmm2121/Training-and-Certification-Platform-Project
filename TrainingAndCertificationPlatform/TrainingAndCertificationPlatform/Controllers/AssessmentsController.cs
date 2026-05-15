@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using TrainingAndCertificationPlatform.Data;
 using TrainingAndCertificationPlatform.Models;
 
 namespace TrainingAndCertificationPlatform.Controllers
 {
+    //[Authorize(Roles = "Instructor,Training Coordinator")]
     public class AssessmentsController : Controller
     {
         private readonly TrainAndCertContext _context;
