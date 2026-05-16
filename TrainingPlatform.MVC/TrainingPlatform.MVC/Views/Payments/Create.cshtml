@@ -1,0 +1,80 @@
+﻿@model TrainingPlatform.MVC.Models.Payment
+
+@{
+    ViewData["Title"] = "Record Payment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>Record New Payment</h2>
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+    <div class="card mt-3">
+        <div class="card-body">
+            <form asp-action="Create" asp-controller="Payments" method="post">
+                @Html.AntiForgeryToken()
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger">
+                        @foreach (var error in ViewData.ModelState.Values
+                                            .SelectMany(v => v.Errors))
+                        {
+                            <p>@error.ErrorMessage</p>
+                        }
+                    </div>
+                }
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Enrollment</label>
+                    <select asp-for="EnrollmentId" asp-items="ViewBag.EnrollmentId"
+                            class="form-select" required>
+                        <option value="">-- Select Enrollment --</option>
+                    </select>
+                    <span asp-validation-for="EnrollmentId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Amount</label>
+                    <input asp-for="Amount" class="form-control"
+                           placeholder="Enter payment amount" required min="0.01" />
+                    <span asp-validation-for="Amount" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Due Date</label>
+                    <input asp-for="DueDate" type="date" class="form-control" required />
+                    <span asp-validation-for="DueDate" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-success">Record Payment</button>
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('form')
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+    </script>
+}

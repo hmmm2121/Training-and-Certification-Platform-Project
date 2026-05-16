@@ -1,0 +1,48 @@
+﻿@model TrainingPlatform.MVC.Models.Enrollment
+
+@{
+    ViewData["Title"] = "Delete Enrollment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>Delete Enrollment</h2>
+
+    <div class="alert alert-danger">
+        Are you sure you want to delete this enrollment?
+    </div>
+
+    <div class="card mt-3">
+        <div class="card-body">
+            <table class="table table-borderless">
+                <tr>
+                    <th>Trainee</th>
+                    <td>@Model.Trainee.FullName</td>
+                </tr>
+                <tr>
+                    <th>Course</th>
+                    <td>@Model.Session.Course.Title</td>
+                </tr>
+                <tr>
+                    <th>Session Date</th>
+                    <td>@Model.Session.SessionDate.ToString("dd MMM yyyy")</td>
+                </tr>
+                <tr>
+                    <th>Status</th>
+                    <td>@Model.Status</td>
+                </tr>
+                <tr>
+                    <th>Enrolled At</th>
+                    <td>@Model.EnrolledAt?.ToString("dd MMM yyyy")</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <form asp-action="Delete" method="post" class="mt-3">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="EnrollmentId" />
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
