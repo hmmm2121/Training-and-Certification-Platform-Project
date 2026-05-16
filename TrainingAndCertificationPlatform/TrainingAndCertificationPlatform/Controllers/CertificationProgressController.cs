@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
 using TrainingAndCertificationPlatform.Data;
 using TrainingAndCertificationPlatform.ViewModels;
 
 namespace TrainingAndCertificationPlatform.Controllers
 {
-    //[Authorize(Roles = "Trainee,Training Coordinator")]
+    [Authorize(Roles = "Trainee,TrainingCoordinator")]
     public class CertificationProgressController : Controller
     {
         private readonly TrainAndCertContext _context;
@@ -18,6 +19,44 @@ namespace TrainingAndCertificationPlatform.Controllers
 
         public async Task<IActionResult> Index(int traineeId, int trackId)
         {
+            ViewData["TraineeId"] = new SelectList(
+                _context.Users.Where(u => u.Role == "Trainee"),
+                "UserId",
+                "FullName",
+                traineeId
+            );
+
+            ViewData["TrackId"] = new SelectList(
+                _context.CertificationTracks,
+                "TrackId",
+                "Name",
+                trackId
+            );
+
+            if (User.IsInRole("Trainee"))
+            {
+                var loggedInUserId = int.Parse(
+                    User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value
+                );
+
+                traineeId = loggedInUserId;
+            }
+
+            if (traineeId == 0 || trackId == 0)
+            {
+                return View(null);
+            }
+
+            // Restricts trainees to only their own progress
+            if (User.IsInRole("Trainee"))
+            {
+                var loggedInUserId = int.Parse(
+                    User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value
+                );
+
+                traineeId = loggedInUserId;
+            }
+
             var trainee = await _context.Users
                 .FirstOrDefaultAsync(u => u.UserId == traineeId);
             var track = await _context.CertificationTracks

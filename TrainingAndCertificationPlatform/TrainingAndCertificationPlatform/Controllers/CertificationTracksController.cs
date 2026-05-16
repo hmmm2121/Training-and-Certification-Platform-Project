@@ -11,7 +11,7 @@ using TrainingAndCertificationPlatform.Models;
 
 namespace TrainingAndCertificationPlatform.Controllers
 {
-    //[Authorize(Roles = "Training Coordinator")]
+    [Authorize(Roles = "TrainingCoordinator")]
     public class CertificationTracksController : Controller
     {
         private readonly TrainAndCertContext _context;

@@ -11,7 +11,7 @@ using TrainingAndCertificationPlatform.Models;
 
 namespace TrainingAndCertificationPlatform.Controllers
 {
-    //[Authorize(Roles = "Instructor,Training Coordinator")]
+    [Authorize(Roles = "Instructor,TrainingCoordinator")]
     public class AssessmentsController : Controller
     {
         private readonly TrainAndCertContext _context;
@@ -24,8 +24,25 @@ namespace TrainingAndCertificationPlatform.Controllers
         // GET: Assessments
         public async Task<IActionResult> Index()
         {
-            var trainAndCertContext = _context.Assessments.Include(a => a.Enrollment);
-            return View(await trainAndCertContext.ToListAsync());
+            var query = _context.Assessments
+                .Include(a => a.Enrollment)
+                    .ThenInclude(e => e.Trainee)
+                .Include(a => a.Enrollment)
+                    .ThenInclude(e => e.Session)
+                        .ThenInclude(s => s.Course)
+                .Include(a => a.Enrollment)
+                    .ThenInclude(e => e.Session)
+                        .ThenInclude(s => s.Instructor)
+                .AsQueryable();
+
+            if (User.IsInRole("Instructor"))
+            {
+                var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+
+                query = query.Where(a => a.Enrollment.Session.InstructorId == userId);
+            }
+
+            return View(await query.ToListAsync());
         }
 
         // GET: Assessments/Details/5
@@ -50,19 +67,7 @@ namespace TrainingAndCertificationPlatform.Controllers
         // GET: Assessments/Create
         public IActionResult Create()
         {
-            ViewData["EnrollmentId"] = new SelectList(
-            _context.Enrollments
-                .Include(e => e.Trainee)
-                .Include(e => e.Session)
-                    .ThenInclude(s => s.Course)
-                .Select(e => new
-                {
-                    e.EnrollmentId,
-                    Display = e.Trainee.FullName + " - " + e.Session.Course.Title
-                }),
-            "EnrollmentId",
-            "Display"
-            );
+            ViewData["EnrollmentId"] = GetEnrollmentSelectList();
             ViewData["Result"] = new SelectList(new[] { "Pass", "Fail" });
             return View();
         }
@@ -79,6 +84,8 @@ namespace TrainingAndCertificationPlatform.Controllers
             {
                 ModelState.AddModelError("EnrollmentId", "This enrollment already has an assessment.");
             }
+            assessment.RecordedAt = DateTime.Now;
+            ModelState.Remove("RecordedAt");
 
             if (ModelState.IsValid)
             {
@@ -87,18 +94,7 @@ namespace TrainingAndCertificationPlatform.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EnrollmentId"] = new SelectList(
-            _context.Enrollments
-                .Include(e => e.Trainee)
-                .Include(e => e.Session)
-                    .ThenInclude(s => s.Course)
-                .Select(e => new
-                {
-                    e.EnrollmentId,
-                    Display = e.Trainee.FullName + " - " + e.Session.Course.Title
-                }),
-            "EnrollmentId", "Display", assessment.EnrollmentId
-            );
+            ViewData["EnrollmentId"] = GetEnrollmentSelectList(assessment.EnrollmentId);
             ViewData["Result"] = new SelectList(new[] { "Pass", "Fail" }, assessment?.Result);
             return View(assessment);
         }
@@ -116,18 +112,7 @@ namespace TrainingAndCertificationPlatform.Controllers
             {
                 return NotFound();
             }
-            ViewData["EnrollmentId"] = new SelectList(
-            _context.Enrollments
-                .Include(e => e.Trainee)
-                .Include(e => e.Session)
-                    .ThenInclude(s => s.Course)
-                .Select(e => new
-                {
-                    e.EnrollmentId,
-                    Display = e.Trainee.FullName + " - " + e.Session.Course.Title
-                }),
-            "EnrollmentId", "Display", assessment.EnrollmentId
-            );
+            ViewData["EnrollmentId"] = GetEnrollmentSelectList(assessment.EnrollmentId);
             ViewData["Result"] = new SelectList(new[] { "Pass", "Fail" }, assessment?.Result);
             return View(assessment);
         }
@@ -152,6 +137,9 @@ namespace TrainingAndCertificationPlatform.Controllers
                 ModelState.AddModelError("EnrollmentId", "This enrollment already has an assessment.");
             }
 
+            assessment.RecordedAt = DateTime.Now;
+            ModelState.Remove("RecordedAt");
+
             if (ModelState.IsValid)
             {
                 try
@@ -173,18 +161,7 @@ namespace TrainingAndCertificationPlatform.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EnrollmentId"] = new SelectList(
-            _context.Enrollments
-                .Include(e => e.Trainee)
-                .Include(e => e.Session)
-                    .ThenInclude(s => s.Course)
-                .Select(e => new
-                {
-                    e.EnrollmentId,
-                    Display = e.Trainee.FullName + " - " + e.Session.Course.Title
-                }),
-            "EnrollmentId", "Display", assessment.EnrollmentId
-            );
+            ViewData["EnrollmentId"] = GetEnrollmentSelectList(assessment.EnrollmentId);
             ViewData["Result"] = new SelectList(new[] { "Pass", "Fail" }, assessment?.Result);
             return View(assessment);
         }
@@ -226,6 +203,40 @@ namespace TrainingAndCertificationPlatform.Controllers
         private bool AssessmentExists(int id)
         {
             return _context.Assessments.Any(e => e.AssessmentId == id);
+        }
+
+        // Populates a dropdown of enrollments, showing trainee name and course title. Instructors only see their own sessions.
+        private SelectList GetEnrollmentSelectList(int? selectedEnrollmentId = null)
+        {
+            var enrollments = _context.Enrollments
+                .Include(e => e.Trainee)
+                .Include(e => e.Session)
+                    .ThenInclude(s => s.Course)
+                .AsQueryable();
+
+            if (User.IsInRole("Instructor"))
+            {
+                var instructorId = int.Parse(
+                    User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value
+                );
+
+                enrollments = enrollments
+                    .Where(e => e.Session.InstructorId == instructorId);
+            }
+
+            var enrollmentItems = enrollments
+                .Select(e => new
+                {
+                    e.EnrollmentId,
+                    Display = e.Trainee.FullName + " - " + e.Session.Course.Title
+                });
+
+            return new SelectList(
+                enrollmentItems,
+                "EnrollmentId",
+                "Display",
+                selectedEnrollmentId
+            );
         }
     }
 }

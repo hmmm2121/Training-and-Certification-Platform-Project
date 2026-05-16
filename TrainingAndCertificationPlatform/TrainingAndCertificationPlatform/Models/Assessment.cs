@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.EntityFrameworkCore;
 
 namespace TrainingAndCertificationPlatform.Models;
@@ -24,5 +25,6 @@ public partial class Assessment
 
     [ForeignKey("EnrollmentId")]
     [InverseProperty("Assessments")]
+    [ValidateNever]
     public virtual Enrollment Enrollment { get; set; } = null!;
 }

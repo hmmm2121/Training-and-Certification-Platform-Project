@@ -11,7 +11,7 @@ using TrainingAndCertificationPlatform.Models;
 
 namespace TrainingAndCertificationPlatform.Controllers
 {
-    //[Authorize(Roles = "Training Coordinator")]
+    [Authorize(Roles = "Instructor,TrainingCoordinator")]
     public class CourseSessionsController : Controller
     {
         private readonly TrainAndCertContext _context;
@@ -24,8 +24,19 @@ namespace TrainingAndCertificationPlatform.Controllers
         // GET: CourseSessions
         public async Task<IActionResult> Index()
         {
-            var trainAndCertContext = _context.CourseSessions.Include(c => c.Course).Include(c => c.Instructor).Include(c => c.Room);
-            return View(await trainAndCertContext.ToListAsync());
+            var query = _context.CourseSessions
+                .Include(c => c.Course)
+                .Include(c => c.Instructor)
+                .Include(c => c.Room)
+                .AsQueryable();
+
+            if (User.IsInRole("Instructor"))
+            {
+                var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+                query = query.Where(cs => cs.InstructorId == userId);
+            }
+
+            return View(await query.ToListAsync());
         }
 
         // GET: CourseSessions/Details/5
@@ -50,6 +61,7 @@ namespace TrainingAndCertificationPlatform.Controllers
         }
 
         // GET: CourseSessions/Create
+        [Authorize(Roles = "TrainingCoordinator")]
         public IActionResult Create()
         {
             // populates dropdowns
@@ -67,6 +79,7 @@ namespace TrainingAndCertificationPlatform.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "TrainingCoordinator")]
         public async Task<IActionResult> Create([Bind("SessionId,CourseId,InstructorId,RoomId,SessionDate,StartTime,EndTime,MaxCapacity")] CourseSession courseSession)
         {
             // Validates that EndTime is after StartTime
@@ -81,7 +94,7 @@ namespace TrainingAndCertificationPlatform.Controllers
                 ModelState.AddModelError("SessionDate", "Session Date cannot be in the past.");
             }
 
-            // Validates that no instructor double-books themselves
+            // Validates that no instructor is double booked
             if (_context.CourseSessions.Any(cs =>
                 cs.InstructorId == courseSession.InstructorId &&
                 cs.SessionDate == courseSession.SessionDate &&
@@ -91,7 +104,7 @@ namespace TrainingAndCertificationPlatform.Controllers
                 ModelState.AddModelError("InstructorId", "This instructor is already booked for another session at the same time.");
             }
 
-            // Validates that no room double-books itself
+            // Validates that no room is double booked
             if (_context.CourseSessions.Any(cs =>
                 cs.RoomId == courseSession.RoomId &&
                 cs.SessionDate == courseSession.SessionDate &&
@@ -130,6 +143,7 @@ namespace TrainingAndCertificationPlatform.Controllers
         }
 
         // GET: CourseSessions/Edit/5
+        [Authorize(Roles = "TrainingCoordinator")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -157,6 +171,7 @@ namespace TrainingAndCertificationPlatform.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "TrainingCoordinator")]
         public async Task<IActionResult> Edit(int id, [Bind("SessionId,CourseId,InstructorId,RoomId,SessionDate,StartTime,EndTime,MaxCapacity")] CourseSession courseSession)
         {
             // Validates that EndTime is after StartTime
@@ -239,6 +254,7 @@ namespace TrainingAndCertificationPlatform.Controllers
         }
 
         // GET: CourseSessions/Delete/5
+        [Authorize(Roles = "TrainingCoordinator")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -262,6 +278,7 @@ namespace TrainingAndCertificationPlatform.Controllers
         // POST: CourseSessions/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "TrainingCoordinator")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var courseSession = await _context.CourseSessions.FindAsync(id);
