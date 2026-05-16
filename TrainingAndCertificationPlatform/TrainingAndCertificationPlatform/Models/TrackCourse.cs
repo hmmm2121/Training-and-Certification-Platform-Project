@@ -12,8 +12,10 @@ public partial class TrackCourse
     [Key]
     public int Id { get; set; }
 
+    [Display(Name = "Track")]
     public int TrackId { get; set; }
 
+    [Display(Name = "Course")]
     public int CourseId { get; set; }
 
     [ForeignKey("CourseId")]

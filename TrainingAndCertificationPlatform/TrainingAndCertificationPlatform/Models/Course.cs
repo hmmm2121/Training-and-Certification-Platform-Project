@@ -27,8 +27,10 @@ public partial class Course
     [Column(TypeName = "decimal(10, 2)")]
     public decimal Fee { get; set; }
 
+    [Display(Name = "Subject")]
     public int SubjectId { get; set; }
 
+    [Display(Name = "Prerequisite Course")]
     public int? PrerequisiteCourseId { get; set; }
 
     [InverseProperty("Course")]

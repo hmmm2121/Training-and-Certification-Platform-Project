@@ -55,6 +55,10 @@ namespace TrainingAndCertificationPlatform.Controllers
 
             var assessment = await _context.Assessments
                 .Include(a => a.Enrollment)
+                    .ThenInclude(e => e.Trainee)
+                .Include(a => a.Enrollment)
+                    .ThenInclude(e => e.Session)
+                        .ThenInclude(s => s.Course)
                 .FirstOrDefaultAsync(m => m.AssessmentId == id);
             if (assessment == null)
             {
