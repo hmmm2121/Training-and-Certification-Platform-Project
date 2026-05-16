@@ -1,0 +1,86 @@
+﻿@model IEnumerable<TrainingPlatform.MVC.Models.Payment>
+
+@{
+    ViewData["Title"] = "Payment History";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>Payment History — @ViewBag.Trainee.FullName</h2>
+
+    <div class="row mt-3 mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5>Total Fees</h5>
+                    <h3>@ViewBag.TotalFees.ToString("C")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5>Total Paid</h5>
+                    <h3>@ViewBag.TotalPaid.ToString("C")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white @(ViewBag.Outstanding > 0 ? "bg-danger" : "bg-success")">
+                <div class="card-body">
+                    <h5>Outstanding Balance</h5>
+                    <h3>@ViewBag.Outstanding.ToString("C")</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h4>Payment History</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Course</th>
+                <th>Amount</th>
+                <th>Paid At</th>
+                <th>Due Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var payment in Model)
+            {
+                <tr>
+                    <td>@payment.Enrollment.Session.Course.Title</td>
+                    <td>@payment.Amount.ToString("C")</td>
+                    <td>
+                        @if (payment.PaidAt != null)
+                        {
+                            @payment.PaidAt?.ToString("dd MMM yyyy")
+                        }
+                        else
+                        {
+                            <span class="text-muted">Not Paid</span>
+                        }
+                    </td>
+                    <td>@payment.DueDate.ToString("dd MMM yyyy")</td>
+                    <td>
+                        @if (payment.PaidAt != null)
+                        {
+                            <span class="badge bg-success">Paid</span>
+                        }
+                        else if (payment.IsOverdue)
+                        {
+                            <span class="badge bg-danger">Overdue</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning">Pending</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <a asp-action="Index" class="btn btn-secondary mt-3">Back to All Payments</a>
+</div>

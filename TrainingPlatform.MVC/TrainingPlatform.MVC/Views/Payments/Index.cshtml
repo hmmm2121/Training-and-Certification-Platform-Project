@@ -1,0 +1,74 @@
+﻿@model IEnumerable<TrainingPlatform.MVC.Models.Payment>
+
+@{
+    ViewData["Title"] = "Payments";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>Payment Records</h2>
+
+    <a asp-action="Create" class="btn btn-primary mb-3">Record New Payment</a>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Trainee</th>
+                <th>Course</th>
+                <th>Amount</th>
+                <th>Paid At</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var payment in Model)
+            {
+                <tr>
+                    <td>@payment.Enrollment.Trainee.FullName</td>
+                    <td>@payment.Enrollment.Session.Course.Title</td>
+                    <td>@payment.Amount.ToString("C")</td>
+                    <td>
+                        @if (payment.PaidAt != null)
+                        {
+                            @payment.PaidAt?.ToString("dd MMM yyyy")
+                        }
+                        else
+                        {
+                            <span class="text-muted">Not Paid</span>
+                        }
+                    </td>
+                    <td>@payment.DueDate.ToString("dd MMM yyyy")</td>
+                    <td>
+                        @if (payment.PaidAt != null)
+                        {
+                            <span class="badge bg-success">Paid</span>
+                        }
+                        else if (payment.IsOverdue)
+                        {
+                            <span class="badge bg-danger">Overdue</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning">Pending</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@payment.PaymentId"
+                           class="btn btn-sm btn-info">Details</a>
+                        <a asp-action="Edit" asp-route-id="@payment.PaymentId"
+                           class="btn btn-sm btn-warning">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@payment.PaymentId"
+                           class="btn btn-sm btn-danger">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

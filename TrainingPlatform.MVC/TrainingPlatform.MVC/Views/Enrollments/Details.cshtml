@@ -1,0 +1,137 @@
+﻿@model TrainingPlatform.MVC.Models.Enrollment
+
+@{
+    ViewData["Title"] = "Enrollment Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>Enrollment Details</h2>
+
+    <div class="card mt-3">
+        <div class="card-body">
+            <table class="table table-borderless">
+                <tr>
+                    <th>Trainee</th>
+                    <td>@Model.Trainee.FullName</td>
+                </tr>
+                <tr>
+                    <th>Course</th>
+                    <td>@Model.Session.Course.Title</td>
+                </tr>
+                <tr>
+                    <th>Instructor</th>
+                    <td>@Model.Session.Instructor.FullName</td>
+                </tr>
+                <tr>
+                    <th>Session Date</th>
+                    <td>@Model.Session.SessionDate.ToString("dd MMM yyyy")</td>
+                </tr>
+                <tr>
+                    <th>Session Time</th>
+                    <td>@Model.Session.StartTime.ToString("hh:mm tt") - @Model.Session.EndTime.ToString("hh:mm tt")</td>
+                </tr>
+                <tr>
+                    <th>Enrolled At</th>
+                    <td>@Model.EnrolledAt?.ToString("dd MMM yyyy hh:mm tt")</td>
+                </tr>
+                <tr>
+                    <th>Status</th>
+                    <td>
+                        @switch (Model.Status)
+                        {
+                            case "Enrolled":
+                                <span class="badge bg-primary">Enrolled</span>
+                                break;
+                            case "Confirmed":
+                                <span class="badge bg-info">Confirmed</span>
+                                break;
+                            case "Attending":
+                                <span class="badge bg-warning">Attending</span>
+                                break;
+                            case "Completed":
+                                <span class="badge bg-success">Completed</span>
+                                break;
+                            case "Dropped":
+                                <span class="badge bg-danger">Dropped</span>
+                                break;
+                        }
+                    </td>
+                </tr>
+            </table>
+
+            @if (Model.Assessments.Any())
+            {
+                <h5 class="mt-3">Assessments</h5>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Result</th>
+                            <th>Notes</th>
+                            <th>Recorded At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var assessment in Model.Assessments)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge @(assessment.Result == "Pass" ? "bg-success" : "bg-danger")">
+                                        @assessment.Result
+                                    </span>
+                                </td>
+                                <td>@assessment.Notes</td>
+                                <td>@assessment.RecordedAt?.ToString("dd MMM yyyy")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+
+            @if (Model.Payments.Any())
+            {
+                <h5 class="mt-3">Payments</h5>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Amount</th>
+                            <th>Paid At</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var payment in Model.Payments)
+                        {
+                            <tr>
+                                <td>@payment.Amount.ToString("C")</td>
+                                <td>@payment.PaidAt?.ToString("dd MMM yyyy")</td>
+                                <td>@payment.DueDate.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    @if (payment.PaidAt != null)
+                                    {
+                                        <span class="badge bg-success">Paid</span>
+                                    }
+                                    else if (payment.IsOverdue)
+                                    {
+                                        <span class="badge bg-danger">Overdue</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning">Pending</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a asp-action="UpdateStatus" asp-route-id="@Model.EnrollmentId"
+           class="btn btn-warning">Update Status</a>
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
