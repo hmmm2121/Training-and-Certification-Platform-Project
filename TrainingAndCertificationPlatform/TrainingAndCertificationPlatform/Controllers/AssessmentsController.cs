@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using TrainingAndCertificationPlatform.Data;
 using TrainingAndCertificationPlatform.Models;
+using TrainingAndCertificationPlatform.Services;
 
 namespace TrainingAndCertificationPlatform.Controllers
 {
@@ -15,10 +16,12 @@ namespace TrainingAndCertificationPlatform.Controllers
     public class AssessmentsController : Controller
     {
         private readonly TrainAndCertContext _context;
+        private readonly NotificationService _notificationService;
 
-        public AssessmentsController(TrainAndCertContext context)
+        public AssessmentsController(TrainAndCertContext context, NotificationService notificationService)
         {
             _context = context;
+            _notificationService = notificationService;
         }
 
         // GET: Assessments
@@ -96,6 +99,20 @@ namespace TrainingAndCertificationPlatform.Controllers
                 assessment.RecordedAt = DateTime.Now;
                 _context.Add(assessment);
                 await _context.SaveChangesAsync();
+                // notify the trainee of the result
+                var enrollment = await _context.Enrollments
+                    .Include(e => e.Session)
+                        .ThenInclude(s => s.Course)
+                    .FirstOrDefaultAsync(e => e.EnrollmentId == assessment.EnrollmentId);
+
+                if (enrollment != null)
+                {
+                    await _notificationService.NotifyAssessmentRecorded(
+                        enrollment.TraineeId,
+                        enrollment.Session.Course.Title,
+                        assessment.Result
+                    );
+                }
                 return RedirectToAction(nameof(Index));
             }
             ViewData["EnrollmentId"] = GetEnrollmentSelectList(assessment.EnrollmentId);

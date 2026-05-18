@@ -17,45 +17,33 @@ namespace TrainingAndCertificationPlatform.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(int traineeId, int trackId)
+        public async Task<IActionResult> Index(int trackId, int traineeId)
         {
-            ViewData["TraineeId"] = new SelectList(
-                _context.Users.Where(u => u.Role == "Trainee"),
-                "UserId",
-                "FullName",
-                traineeId
-            );
+            // If trainee, always force their own ID — they can never pick someone else
+            if (User.IsInRole("Trainee"))
+            {
+                traineeId = int.Parse(
+                    User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value
+                );
+            }
+            else
+            {
+                // Coordinator sees a trainee dropdown
+                ViewData["TraineeId"] = new SelectList(
+                    _context.Users.Where(u => u.Role == "Trainee"),
+                    "UserId", "FullName", traineeId
+                );
+            }
 
+            // Everyone sees the track dropdown
             ViewData["TrackId"] = new SelectList(
                 _context.CertificationTracks,
-                "TrackId",
-                "Name",
-                trackId
+                "TrackId", "Name", trackId
             );
 
-            if (User.IsInRole("Trainee"))
-            {
-                var loggedInUserId = int.Parse(
-                    User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value
-                );
-
-                traineeId = loggedInUserId;
-            }
-
+            // Don't query until both are selected
             if (traineeId == 0 || trackId == 0)
-            {
                 return View(null);
-            }
-
-            // Restricts trainees to only their own progress
-            if (User.IsInRole("Trainee"))
-            {
-                var loggedInUserId = int.Parse(
-                    User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value
-                );
-
-                traineeId = loggedInUserId;
-            }
 
             var trainee = await _context.Users
                 .FirstOrDefaultAsync(u => u.UserId == traineeId);
@@ -63,9 +51,7 @@ namespace TrainingAndCertificationPlatform.Controllers
                 .FirstOrDefaultAsync(t => t.TrackId == trackId);
 
             if (trainee == null || track == null)
-            {
                 return NotFound();
-            }
 
             // Required courses for this certification track
             var requiredCourses = await _context.TrackCourses
@@ -79,8 +65,7 @@ namespace TrainingAndCertificationPlatform.Controllers
                 .Include(a => a.Enrollment)
                     .ThenInclude(e => e.Session)
                         .ThenInclude(s => s.Course)
-                .Where(a =>
-                    a.Result == "Pass" && a.Enrollment.TraineeId == traineeId)
+                .Where(a => a.Result == "Pass" && a.Enrollment.TraineeId == traineeId)
                 .Select(a => a.Enrollment.Session.Course.Title)
                 .Distinct()
                 .ToListAsync();
@@ -101,6 +86,7 @@ namespace TrainingAndCertificationPlatform.Controllers
                 MissingCourses = missingCourses,
                 IsEligible = !missingCourses.Any()
             };
+
             return View(viewModel);
         }
     }

@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+@inject TrainingAndCertificationPlatform.Data.TrainAndCertContext _db
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -42,12 +45,35 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Assessments" asp-action="Index">Assessments</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="CertificationProgress" asp-action="Index" asp-route-traineeId="1" asp-route-trackId="1">Certification Progress</a>
+                            <a class="nav-link text-dark" asp-controller="CertificationProgress" asp-action="Index">Certification Progress</a>
                         </li>
+                        @if (User.Identity!.IsAuthenticated)
+                        {
+                            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+                            var unreadCount = _db.Notifications
+                            .Count(n => n.UserId == userId && !n.IsRead);
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Notifications" asp-action="Index">
+                                    🔔 Notifications
+                                    @if (unreadCount > 0)
+                                    {
+                                        <span class="badge bg-danger">@unreadCount</span>
+                                    }
+                                </a>
+                            </li>
+                        }
                         @if (User.Identity!.IsAuthenticated)
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Account" asp-action="Logout">Logout</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("TrainingCoordinator"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account"
+                                   asp-action="CreateInstructor">Create Instructor</a>
                             </li>
                         }
                     </ul>

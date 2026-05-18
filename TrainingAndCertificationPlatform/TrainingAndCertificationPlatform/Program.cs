@@ -1,6 +1,7 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using TrainingAndCertificationPlatform.Data;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using TrainingAndCertificationPlatform.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,8 @@ builder.Services.AddAuthentication(
     options.LoginPath = "/Account/Login";
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
+
+builder.Services.AddScoped<NotificationService>();
 
 builder.Services.AddAuthorization();
 

@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using TrainingAndCertificationPlatform.Data;
 using TrainingAndCertificationPlatform.Models;
+using TrainingAndCertificationPlatform.Services;
 
 namespace TrainingAndCertificationPlatform.Controllers
 {
@@ -15,10 +16,12 @@ namespace TrainingAndCertificationPlatform.Controllers
     public class CourseSessionsController : Controller
     {
         private readonly TrainAndCertContext _context;
+        private readonly NotificationService _notificationService;
 
-        public CourseSessionsController(TrainAndCertContext context)
+        public CourseSessionsController(TrainAndCertContext context, NotificationService notificationService)
         {
             _context = context;
+            _notificationService = notificationService;
         }
 
         // GET: CourseSessions
@@ -130,6 +133,17 @@ namespace TrainingAndCertificationPlatform.Controllers
                 courseSession.Status = GetSessionStatus(courseSession);
                 _context.Add(courseSession);
                 await _context.SaveChangesAsync();
+
+                // notify the instructor they've been assigned to this session
+                var course = await _context.Courses.FindAsync(courseSession.CourseId);
+                if (course != null)
+                {
+                    await _notificationService.NotifyInstructorAssigned(
+                        courseSession.InstructorId,
+                        course.Title,
+                        courseSession.SessionDate.ToString("dd MMM yyyy")
+                    );
+                }
                 return RedirectToAction(nameof(Index));
             }
             // re-populates dropdowns if validation fails
