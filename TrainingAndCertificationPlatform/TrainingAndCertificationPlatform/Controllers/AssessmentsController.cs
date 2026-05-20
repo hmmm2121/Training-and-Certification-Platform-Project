@@ -40,8 +40,7 @@ namespace TrainingAndCertificationPlatform.Controllers
 
             if (User.IsInRole("Instructor"))
             {
-                var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
-
+                var userId = int.Parse(User.FindFirst("AppUserId")!.Value);
                 query = query.Where(a => a.Enrollment.Session.InstructorId == userId);
             }
 
@@ -237,9 +236,7 @@ namespace TrainingAndCertificationPlatform.Controllers
 
             if (User.IsInRole("Instructor"))
             {
-                var instructorId = int.Parse(
-                    User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value
-                );
+                var instructorId = int.Parse(User.FindFirst("AppUserId")!.Value);
 
                 enrollments = enrollments
                     .Where(e => e.Session.InstructorId == instructorId);

@@ -49,19 +49,23 @@
                         </li>
                         @if (User.Identity!.IsAuthenticated)
                         {
-                            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-                            var unreadCount = _db.Notifications
-                            .Count(n => n.UserId == userId && !n.IsRead);
+                            var appUserIdClaim = User.FindFirst("AppUserId");
+                            if (appUserIdClaim != null)
+                            {
+                                var userId = int.Parse(appUserIdClaim.Value);
+                                var unreadCount = _db.Notifications
+                                .Count(n => n.UserId == userId && !n.IsRead);
 
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Notifications" asp-action="Index">
-                                    🔔 Notifications
-                                    @if (unreadCount > 0)
-                                    {
-                                        <span class="badge bg-danger">@unreadCount</span>
-                                    }
-                                </a>
-                            </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Notifications" asp-action="Index">
+                                        🔔 Notifications
+                                        @if (unreadCount > 0)
+                                        {
+                                            <span class="badge bg-danger">@unreadCount</span>
+                                        }
+                                    </a>
+                                </li>
+                            }
                         }
                         @if (User.Identity!.IsAuthenticated)
                         {

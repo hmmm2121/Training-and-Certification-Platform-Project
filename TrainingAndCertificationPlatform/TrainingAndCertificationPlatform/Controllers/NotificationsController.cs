@@ -22,7 +22,7 @@ namespace TrainingAndCertificationPlatform.Controllers
         // shows all notifications for the logged in user
         public async Task<IActionResult> Index()
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var userId = int.Parse(User.FindFirst("AppUserId")!.Value);
 
             var notifications = await _context.Notifications
                 .Where(n => n.UserId == userId)
@@ -42,7 +42,7 @@ namespace TrainingAndCertificationPlatform.Controllers
         [HttpPost]
         public async Task<IActionResult> MarkRead(int id)
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var userId = int.Parse(User.FindFirst("AppUserId")!.Value);
 
             var notification = await _context.Notifications
                 .FirstOrDefaultAsync(n => n.NotificationId == id && n.UserId == userId);

@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using TrainingAndCertificationPlatform.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace TrainingAndCertificationPlatform.Data;
 
-public partial class TrainAndCertContext : DbContext
+public partial class TrainAndCertContext : IdentityDbContext
 {
     public TrainAndCertContext()
     {
@@ -49,6 +50,7 @@ public partial class TrainAndCertContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<Assessment>(entity =>
         {
             entity.HasKey(e => e.AssessmentId).HasName("PK__Assessme__3D2BF81E48067DB5");

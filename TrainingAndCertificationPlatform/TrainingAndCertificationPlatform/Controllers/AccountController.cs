@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using System.Security.Principal;
 using TrainingAndCertificationPlatform.Data;
 using TrainingAndCertificationPlatform.Models;
 using TrainingAndCertificationPlatform.ViewModels;
@@ -13,22 +11,80 @@ namespace TrainingAndCertificationPlatform.Controllers
 {
     public class AccountController : Controller
     {
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
         private readonly TrainAndCertContext _context;
 
-        public AccountController(TrainAndCertContext context)
+        public AccountController(
+            UserManager<IdentityUser> userManager,
+            SignInManager<IdentityUser> signInManager,
+            TrainAndCertContext context)
         {
+            _userManager = userManager;
+            _signInManager = signInManager;
             _context = context;
         }
 
-        // below are the actions for trainee registration
-        // GET: /Account/Register
+        // ─── LOGIN ───────────────────────────────────────────────────────
+
         [HttpGet]
-        public IActionResult Register()
+        public IActionResult Login() => View();
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
-            return View();
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var result = await _signInManager.PasswordSignInAsync(
+                model.Email, model.Password,
+                isPersistent: false,
+                lockoutOnFailure: false);
+
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError("", "Invalid email or password.");
+                return View(model);
+            }
+
+            var appUser = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == model.Email);
+
+            var identityUser = await _userManager.FindByEmailAsync(model.Email);
+
+            if (appUser != null && identityUser != null)
+            {
+                var existingClaims = await _userManager.GetClaimsAsync(identityUser);
+                var existingAppUserIdClaim = existingClaims
+                    .FirstOrDefault(c => c.Type == "AppUserId");
+
+                if (existingAppUserIdClaim != null)
+                    await _userManager.RemoveClaimAsync(identityUser, existingAppUserIdClaim);
+
+                await _userManager.AddClaimAsync(identityUser,
+                    new Claim("AppUserId", appUser.UserId.ToString()));
+
+                await _signInManager.SignOutAsync();
+                await _signInManager.SignInAsync(identityUser, isPersistent: false);
+            }
+
+            return RedirectToAction("Index", "Home");
         }
 
-        // POST: /Account/Register
+        // ─── LOGOUT ──────────────────────────────────────────────────────
+
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Login");
+        }
+
+        // ─── TRAINEE REGISTER ────────────────────────────────────────────
+
+        [HttpGet]
+        public IActionResult Register() => View();
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
@@ -36,13 +92,27 @@ namespace TrainingAndCertificationPlatform.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            // Check if email is already taken
-            if (await _context.Users.AnyAsync(u => u.Email == model.Email))
+            // Create Identity user
+            var identityUser = new IdentityUser
             {
-                ModelState.AddModelError("Email", "An account with this email already exists.");
+                UserName = model.Email,
+                Email = model.Email,
+                EmailConfirmed = true
+            };
+
+            var result = await _userManager.CreateAsync(identityUser, model.Password);
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                    ModelState.AddModelError("", error.Description);
                 return View(model);
             }
 
+            // Assign Trainee role
+            await _userManager.AddToRoleAsync(identityUser, "Trainee");
+
+            // Create matching record in your Users table
             var user = new User
             {
                 FullName = model.FullName,
@@ -58,16 +128,12 @@ namespace TrainingAndCertificationPlatform.Controllers
             return RedirectToAction("Login");
         }
 
-        // below are the actions for instructor registration done ONLY by the training coordinator
-        // GET: /Account/CreateInstructor
+        // ─── CREATE INSTRUCTOR (Coordinator only) ────────────────────────
+
         [HttpGet]
         [Authorize(Roles = "TrainingCoordinator")]
-        public IActionResult CreateInstructor()
-        {
-            return View();
-        }
+        public IActionResult CreateInstructor() => View();
 
-        // POST: /Account/CreateInstructor
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "TrainingCoordinator")]
@@ -76,13 +142,27 @@ namespace TrainingAndCertificationPlatform.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            // Check if email is already taken
-            if (await _context.Users.AnyAsync(u => u.Email == model.Email))
+            // Create Identity user
+            var identityUser = new IdentityUser
             {
-                ModelState.AddModelError("Email", "An account with this email already exists.");
+                UserName = model.Email,
+                Email = model.Email,
+                EmailConfirmed = true
+            };
+
+            var result = await _userManager.CreateAsync(identityUser, model.Password);
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                    ModelState.AddModelError("", error.Description);
                 return View(model);
             }
 
+            // Assign Instructor role
+            await _userManager.AddToRoleAsync(identityUser, "Instructor");
+
+            // Create matching record in your Users table
             var user = new User
             {
                 FullName = model.FullName,
@@ -98,61 +178,9 @@ namespace TrainingAndCertificationPlatform.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        // ─── ACCESS DENIED ───────────────────────────────────────────────
 
-        // below are the actions for login/logout
         [HttpGet]
-        public IActionResult Login()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == model.Email);
-
-            if (user == null || user.PasswordHash != model.Password)
-            {
-                ModelState.AddModelError("", "Invalid email or password.");
-                return View(model);
-            }
-
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                new Claim(ClaimTypes.Name, user.FullName),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role)
-            };
-
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-            var principal = new ClaimsPrincipal(claimsIdentity);
-
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-
-            return RedirectToAction("Index", "Home");
-        }
-
-        public async Task<IActionResult> Logout()
-        {
-            await HttpContext.SignOutAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme);
-
-            return RedirectToAction("Login");
-        }
-
-        // action for access denied page
-        public IActionResult AccessDenied()
-        {
-            return View();
-        }
+        public IActionResult AccessDenied() => View();
     }
 }

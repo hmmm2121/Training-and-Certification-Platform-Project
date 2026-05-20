@@ -35,7 +35,7 @@ namespace TrainingAndCertificationPlatform.Controllers
 
             if (User.IsInRole("Instructor"))
             {
-                var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+                var userId = int.Parse(User.FindFirst("AppUserId")!.Value);
                 query = query.Where(cs => cs.InstructorId == userId);
             }
 

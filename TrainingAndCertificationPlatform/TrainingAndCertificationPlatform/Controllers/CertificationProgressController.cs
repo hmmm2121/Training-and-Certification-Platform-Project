@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,10 +12,12 @@ namespace TrainingAndCertificationPlatform.Controllers
     public class CertificationProgressController : Controller
     {
         private readonly TrainAndCertContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public CertificationProgressController(TrainAndCertContext context)
+        public CertificationProgressController(TrainAndCertContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index(int trackId, int traineeId)
@@ -22,15 +25,13 @@ namespace TrainingAndCertificationPlatform.Controllers
             // If trainee, always force their own ID — they can never pick someone else
             if (User.IsInRole("Trainee"))
             {
-                traineeId = int.Parse(
-                    User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value
-                );
+                traineeId = int.Parse(User.FindFirst("AppUserId")!.Value);
             }
             else
             {
                 // Coordinator sees a trainee dropdown
                 ViewData["TraineeId"] = new SelectList(
-                    _context.Users.Where(u => u.Role == "Trainee"),
+                    (await _userManager.GetUsersInRoleAsync("Trainee")),
                     "UserId", "FullName", traineeId
                 );
             }
