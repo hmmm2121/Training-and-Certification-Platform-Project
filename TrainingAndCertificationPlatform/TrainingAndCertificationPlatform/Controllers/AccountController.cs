@@ -25,7 +25,7 @@ namespace TrainingAndCertificationPlatform.Controllers
             _context = context;
         }
 
-        // ─── LOGIN ───────────────────────────────────────────────────────
+        //  LOGIN
 
         [HttpGet]
         public IActionResult Login() => View();
@@ -72,7 +72,7 @@ namespace TrainingAndCertificationPlatform.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // ─── LOGOUT ──────────────────────────────────────────────────────
+        //  LOGOUT 
 
         public async Task<IActionResult> Logout()
         {
@@ -80,7 +80,7 @@ namespace TrainingAndCertificationPlatform.Controllers
             return RedirectToAction("Login");
         }
 
-        // ─── TRAINEE REGISTER ────────────────────────────────────────────
+        //  TRAINEE REGISTER 
 
         [HttpGet]
         public IActionResult Register() => View();
@@ -92,7 +92,7 @@ namespace TrainingAndCertificationPlatform.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            // Create Identity user
+            // Create user
             var identityUser = new IdentityUser
             {
                 UserName = model.Email,
@@ -112,7 +112,7 @@ namespace TrainingAndCertificationPlatform.Controllers
             // Assign Trainee role
             await _userManager.AddToRoleAsync(identityUser, "Trainee");
 
-            // Create matching record in your Users table
+            // Create record in users table
             var user = new User
             {
                 FullName = model.FullName,
@@ -128,7 +128,7 @@ namespace TrainingAndCertificationPlatform.Controllers
             return RedirectToAction("Login");
         }
 
-        // ─── CREATE INSTRUCTOR (Coordinator only) ────────────────────────
+        //  create instuctor for the coordinator only
 
         [HttpGet]
         [Authorize(Roles = "TrainingCoordinator")]
@@ -142,7 +142,7 @@ namespace TrainingAndCertificationPlatform.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            // Create Identity user
+            // Create user
             var identityUser = new IdentityUser
             {
                 UserName = model.Email,
@@ -162,7 +162,7 @@ namespace TrainingAndCertificationPlatform.Controllers
             // Assign Instructor role
             await _userManager.AddToRoleAsync(identityUser, "Instructor");
 
-            // Create matching record in your Users table
+            // Create record in users table
             var user = new User
             {
                 FullName = model.FullName,
@@ -178,7 +178,7 @@ namespace TrainingAndCertificationPlatform.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // ─── ACCESS DENIED ───────────────────────────────────────────────
+        // access denied
 
         [HttpGet]
         public IActionResult AccessDenied() => View();

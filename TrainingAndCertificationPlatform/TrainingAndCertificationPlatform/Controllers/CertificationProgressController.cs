@@ -12,12 +12,9 @@ namespace TrainingAndCertificationPlatform.Controllers
     public class CertificationProgressController : Controller
     {
         private readonly TrainAndCertContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
-
-        public CertificationProgressController(TrainAndCertContext context, UserManager<IdentityUser> userManager)
+        public CertificationProgressController(TrainAndCertContext context)
         {
             _context = context;
-            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index(int trackId, int traineeId)
@@ -31,7 +28,7 @@ namespace TrainingAndCertificationPlatform.Controllers
             {
                 // Coordinator sees a trainee dropdown
                 ViewData["TraineeId"] = new SelectList(
-                    (await _userManager.GetUsersInRoleAsync("Trainee")),
+                    _context.Users.Where(u => u.Role == "Trainee"),
                     "UserId", "FullName", traineeId
                 );
             }
