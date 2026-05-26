@@ -1,0 +1,59 @@
+﻿@model TrainingAndCertificationPlatform.Models.Payment
+@{
+    ViewData["Title"] = "Payment Details";
+}
+<h1>Payment Details</h1>
+
+@if (Model.IsOverdue)
+{
+    <div class="alert alert-danger">
+        ⚠️ This payment is <strong>overdue</strong>. Due date was @Model.DueDate.ToString("dd/MM/yyyy").
+    </div>
+}
+
+<hr />
+<dl class="row">
+    <dt class="col-sm-3">Trainee</dt>
+    <dd class="col-sm-9">@Model.Enrollment.Trainee.FullName</dd>
+
+    <dt class="col-sm-3">Course</dt>
+    <dd class="col-sm-9">@Model.Enrollment.Session.Course.Title</dd>
+
+    <dt class="col-sm-3">Amount</dt>
+    <dd class="col-sm-9">@Model.Amount.ToString("C")</dd>
+
+    <dt class="col-sm-3">Due Date</dt>
+    <dd class="col-sm-9">
+        @Model.DueDate.ToString("dd/MM/yyyy")
+        @if (Model.IsOverdue)
+        {
+            <span class="badge bg-danger ms-1">Overdue</span>
+        }
+    </dd>
+
+    <dt class="col-sm-3">Paid At</dt>
+    <dd class="col-sm-9">
+        @(Model.PaidAt.HasValue? Model.PaidAt.Value.ToString("dd/MM/yyyy HH:mm") : "Not yet paid")
+    </dd>
+
+    <dt class="col-sm-3">Status</dt>
+    <dd class="col-sm-9">
+        @if (Model.PaidAt.HasValue)
+        {
+            <span class="badge bg-success">Paid</span>
+        }
+        else if (Model.IsOverdue)
+        {
+            <span class="badge bg-danger">Overdue</span>
+        }
+        else
+        {
+            <span class="badge bg-warning text-dark">Pending</span>
+        }
+    </dd>
+</dl>
+
+<div class="mt-3">
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    <a asp-action="Delete" asp-route-id="@Model.PaymentId" class="btn btn-danger ms-2">Delete</a>
+</div>

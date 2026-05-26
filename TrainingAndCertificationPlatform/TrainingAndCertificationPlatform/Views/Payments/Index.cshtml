@@ -1,0 +1,57 @@
+﻿@model IEnumerable<TrainingAndCertificationPlatform.Models.Payment>
+@{
+    ViewData["Title"] = "Payments";
+}
+<h1>Payments</h1>
+<p>
+    <a asp-action="Create" class="btn btn-primary">Record New Payment</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Trainee</th>
+            <th>Course</th>
+            <th>Amount</th>
+            <th>Due Date</th>
+            <th>Paid At</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var payment in Model)
+        {
+            <tr class="@(payment.IsOverdue ? "table-danger" : "")">
+                <td>@payment.Enrollment.Trainee.FullName</td>
+                <td>@payment.Enrollment.Session.Course.Title</td>
+                <td>@payment.Amount.ToString("C")</td>
+                <td>
+                    @payment.DueDate.ToString("dd/MM/yyyy")
+                    @if (payment.IsOverdue)
+                    {
+                        <span class="badge bg-danger ms-1">Overdue</span>
+                    }
+                </td>
+                <td>@(payment.PaidAt.HasValue? payment.PaidAt.Value.ToString("dd/MM/yyyy") : "Unpaid")</td>
+                <td>
+                    @if (payment.PaidAt.HasValue)
+                    {
+                        <span class="badge bg-success">Paid</span>
+                    }
+                    else if (payment.IsOverdue)
+                    {
+                        <span class="badge bg-danger">Overdue</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">Pending</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@payment.PaymentId" class="btn btn-sm btn-info">Details</a>
+                    <a asp-action="Delete" asp-route-id="@payment.PaymentId" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,104 @@
+﻿@model TrainingAndCertificationPlatform.Models.Payment
+@{
+    ViewData["Title"] = "Record Payment";
+}
+<h1>Record Payment</h1>
+<h4>Payment</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="EnrollmentId" class="control-label"></label>
+                <select asp-for="EnrollmentId" class="form-control" asp-items="ViewBag.EnrollmentId">
+                    <option value="">-- Select Enrollment --</option>
+                </select>
+                <span asp-validation-for="EnrollmentId" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-2">
+                <label asp-for="Amount" class="control-label"></label>
+                <input asp-for="Amount" class="form-control" />
+                <span asp-validation-for="Amount" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-2">
+                <label asp-for="DueDate" class="control-label"></label>
+                <input type="text" id="DueDateDisplay" class="form-control" placeholder="DD/MM/YYYY" />
+                <input type="hidden" asp-for="DueDate" id="DueDate" />
+                <small class="text-muted">Format: DD/MM/YYYY (e.g. 26/05/2026)</small>
+                <span asp-validation-for="DueDate" class="text-danger"></span>
+                <span id="dueDateError" class="text-danger d-block"></span>
+            </div>
+            <div class="form-group mt-2">
+                <div class="form-check">
+                    <input asp-for="IsOverdue" class="form-check-input" type="checkbox" />
+                    <label asp-for="IsOverdue" class="form-check-label">Mark as Overdue</label>
+                </div>
+            </div>
+            <div class="form-group mt-3">
+                <input type="submit" value="Record Payment" class="btn btn-primary" id="submitBtn" />
+            </div>
+        </form>
+    </div>
+</div>
+<div class="mt-3">
+    <a asp-action="Index">Back to List</a>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        const displayInput = document.getElementById('DueDateDisplay');
+        const hiddenInput = document.getElementById('DueDate');
+        const dueDateError = document.getElementById('dueDateError');
+
+        function validateAndConvert() {
+            const value = displayInput.value.trim();
+            dueDateError.textContent = '';
+            hiddenInput.value = '';
+
+            if (!value) return true;
+
+            const slashFormat = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+
+            if (!slashFormat.test(value)) {
+                dueDateError.textContent = 'Please enter a date in DD/MM/YYYY format.';
+                return false;
+            }
+
+            const [, day, month, year] = value.match(slashFormat).map(Number);
+
+            if (year > 2026) {
+                dueDateError.textContent = 'Year cannot be beyond 2026.';
+                return false;
+            }
+
+            // Validate actual calendar date
+            const date = new Date(year, month - 1, day);
+            if (
+                date.getFullYear() !== year ||
+                date.getMonth() + 1 !== month ||
+                date.getDate() !== day
+            ) {
+                dueDateError.textContent = `"${value}" is not a valid calendar date.`;
+                return false;
+            }
+
+            // Convert to YYYY-MM-DD for the hidden field that gets submitted
+            hiddenInput.value = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            return true;
+        }
+
+        displayInput.addEventListener('blur', validateAndConvert);
+        displayInput.addEventListener('input', () => {
+            if (dueDateError.textContent) validateAndConvert();
+        });
+
+        document.querySelector('form').addEventListener('submit', function (e) {
+            if (!validateAndConvert()) {
+                e.preventDefault();
+            }
+        });
+    </script>
+}

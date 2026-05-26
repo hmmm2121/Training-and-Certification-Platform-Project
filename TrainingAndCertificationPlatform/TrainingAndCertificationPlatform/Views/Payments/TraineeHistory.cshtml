@@ -1,0 +1,88 @@
+﻿@model IEnumerable<TrainingAndCertificationPlatform.Models.Payment>
+@{
+    ViewData["Title"] = "Payment History";
+    var trainee = ViewBag.Trainee;
+}
+
+<h1>Payment History</h1>
+<h4>@trainee.FullName</h4>
+<hr />
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-bg-secondary">
+            <div class="card-body">
+                <h6 class="card-title">Total Fees</h6>
+                <p class="card-text fs-5">@((decimal)ViewBag.TotalFees).ToString("C")</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-bg-success">
+            <div class="card-body">
+                <h6 class="card-title">Total Paid</h6>
+                <p class="card-text fs-5">@((decimal)ViewBag.TotalPaid).ToString("C")</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card @((decimal)ViewBag.Outstanding > 0 ? "text-bg-danger" : "text-bg-success")">
+            <div class="card-body">
+                <h6 class="card-title">Outstanding Balance</h6>
+                <p class="card-text fs-5">@((decimal)ViewBag.Outstanding).ToString("C")</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No payment records found for this trainee.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Course</th>
+                <th>Amount</th>
+                <th>Due Date</th>
+                <th>Paid At</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class="@(item.IsOverdue ? "table-danger" : "")">
+                    <td>@Html.DisplayFor(modelItem => item.Enrollment.Session.Course.Title)</td>
+                    <td>@item.Amount.ToString("C")</td>
+                    <td>@Html.DisplayFor(modelItem => item.DueDate)</td>
+                    <td>@(item.PaidAt.HasValue? item.PaidAt.Value.ToString("g") : "—")</td>
+                    <td>
+                        @if (item.PaidAt.HasValue)
+                        {
+                            <span class="badge bg-success">Paid</span>
+                        }
+                        else if (item.IsOverdue)
+                        {
+                            <span class="badge bg-danger">Overdue</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">Pending</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.PaymentId">Details</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<div>
+    <a asp-action="Index">Back to All Payments</a>
+</div>

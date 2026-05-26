@@ -36,6 +36,9 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="CourseSessions" asp-action="Index">Course Sessions</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="PublicLookup" asp-action="Index">Public Lookup</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="CertificationTracks" asp-action="Index">Certification Tracks</a>
                         </li>
                         <li class="nav-item">
@@ -47,6 +50,12 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="CertificationProgress" asp-action="Index">Certification Progress</a>
                         </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Enrollments" asp-action="Index">Enrollments</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Payments" asp-action="Index">Payments</a>
                         @if (User.Identity!.IsAuthenticated)
                         {
                             var appUserIdClaim = User.FindFirst("AppUserId");
