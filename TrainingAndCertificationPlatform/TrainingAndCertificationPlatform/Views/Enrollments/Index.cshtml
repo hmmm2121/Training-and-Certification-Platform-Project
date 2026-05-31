@@ -1,0 +1,122 @@
+﻿@model IEnumerable<TrainingAndCertificationPlatform.Models.Enrollment>
+
+@{
+    ViewData["Title"] = "Enrollments";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+
+        <h1 class="fw-bold">
+            Enrollments
+        </h1>
+
+        <p class="text-muted">
+            Manage trainee enrollments and track their status.
+        </p>
+
+    </div>
+
+    <a asp-action="Create"
+       class="btn btn-dark">
+        + Add Enrollment
+    </a>
+
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show shadow-sm"
+         role="alert">
+
+        @TempData["Success"]
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+
+    </div>
+}
+
+<div class="card shadow-sm">
+
+    <div class="card-body">
+
+        <table class="table table-hover align-middle">
+
+            <thead class="table-light">
+
+                <tr>
+                    <th>Trainee</th>
+                    <th>Course</th>
+                    <th>Enrolled At</th>
+                    <th>Status</th>
+                    <th width="220">Actions</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+
+                        <td>
+                            @item.Trainee.FullName
+                        </td>
+
+                        <td>
+                            @item.Session.Course.Title
+                        </td>
+
+                        <td>
+                            @item.EnrolledAt
+                        </td>
+
+                        <td>
+
+                            <span class="badge bg-@(item.Status == "Active" ? "success" :
+                                                                                       item.Status == "Withdrawn" ? "danger" :
+                                                                                       "secondary")">
+
+                            @item.Status
+
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <a asp-action="Edit"
+                               asp-route-id="@item.EnrollmentId"
+                               class="btn btn-sm btn-outline-dark">
+                                Edit
+                            </a>
+
+                            <a asp-action="Details"
+                               asp-route-id="@item.EnrollmentId"
+                               class="btn btn-sm btn-outline-primary">
+                                Details
+                            </a>
+
+                            <a asp-action="Delete"
+                               asp-route-id="@item.EnrollmentId"
+                               class="btn btn-sm btn-outline-danger">
+                                Delete
+                            </a>
+
+                        </td>
+
+                    </tr>
+                                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

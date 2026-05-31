@@ -1,0 +1,79 @@
+﻿@model IEnumerable<TrainingAndCertificationPlatform.Models.CertificationTrack>
+
+@{
+    ViewData["Title"] = "Certification Tracks";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h1 class="fw-bold">Certification Tracks</h1>
+        <p class="text-muted">
+            Manage certification paths and training track information.
+        </p>
+    </div>
+
+    <a asp-action="Create" class="btn btn-dark">
+        + Add Track
+    </a>
+
+</div>
+
+<table class="table table-hover align-middle">
+
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+
+            <th class="text-end">
+                Actions
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+
+                <td class="text-end">
+
+                    <a asp-action="Edit"
+                       asp-route-id="@item.TrackId"
+                       class="btn btn-sm btn-outline-primary">
+                        Edit
+                    </a>
+
+                    <a asp-action="Details"
+                       asp-route-id="@item.TrackId"
+                       class="btn btn-sm btn-outline-dark">
+                        Details
+                    </a>
+
+                    <a asp-action="Delete"
+                       asp-route-id="@item.TrackId"
+                       class="btn btn-sm btn-outline-danger">
+                        Delete
+                    </a>
+
+                </td>
+
+            </tr>
+        }
+    </tbody>
+
+</table>

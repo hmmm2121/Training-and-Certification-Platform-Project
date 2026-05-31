@@ -1,0 +1,96 @@
+﻿@model TrainingAndCertificationPlatform.Models.Enrollment
+
+@{
+    ViewData["Title"] = "Enrollment Details";
+}
+
+<div class="mt-4">
+
+    <div class="mb-4">
+
+        <h1 class="fw-bold">
+            Enrollment Details
+        </h1>
+
+        <p class="text-muted">
+            View complete enrollment information and trainee status.
+        </p>
+
+    </div>
+
+    <div class="card shadow-sm p-4">
+
+        <div class="row mb-3">
+
+            <div class="col-md-3 fw-bold">
+                Trainee
+            </div>
+
+            <div class="col-md-9">
+                @Model.Trainee.FullName
+            </div>
+
+        </div>
+
+        <div class="row mb-3">
+
+            <div class="col-md-3 fw-bold">
+                Course
+            </div>
+
+            <div class="col-md-9">
+                @Model.Session.Course.Title
+            </div>
+
+        </div>
+
+        <div class="row mb-3">
+
+            <div class="col-md-3 fw-bold">
+                Enrolled At
+            </div>
+
+            <div class="col-md-9">
+                @Model.EnrolledAt
+            </div>
+
+        </div>
+
+        <div class="row mb-4">
+
+            <div class="col-md-3 fw-bold">
+                Status
+            </div>
+
+            <div class="col-md-9">
+
+                <span class="badge bg-@(Model.Status == "Active" ? "success" :
+                                                               Model.Status == "Withdrawn" ? "danger" :
+                                                               "secondary")">
+
+                    @Model.Status
+
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <a asp-action="Edit"
+               asp-route-id="@Model.EnrollmentId"
+               class="btn btn-dark">
+                Edit Enrollment
+            </a>
+
+            <a asp-action="Index"
+               class="btn btn-outline-secondary">
+                Back to Enrollments
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

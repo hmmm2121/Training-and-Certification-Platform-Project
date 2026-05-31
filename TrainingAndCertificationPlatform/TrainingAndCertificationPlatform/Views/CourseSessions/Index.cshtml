@@ -1,0 +1,106 @@
+﻿@model IEnumerable<TrainingAndCertificationPlatform.Models.CourseSession>
+
+@{
+    ViewData["Title"] = "Course Sessions";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h1 class="fw-bold">Course Sessions</h1>
+        <p class="text-muted">Manage scheduled training sessions, instructors, rooms, and session status.</p>
+    </div>
+
+    @if (User.IsInRole("TrainingCoordinator"))
+    {
+        <a asp-action="Create" class="btn btn-dark">
+            + Add Session
+        </a>
+    }
+
+</div>
+
+<table class="table table-hover align-middle">
+    <thead>
+        <tr>
+            <th>Session Date</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Max Capacity</th>
+            <th>Status</th>
+            <th>Course</th>
+            <th>Instructor</th>
+            <th>Room</th>
+            <th class="text-end">Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.SessionDate)</td>
+                <td>@Html.DisplayFor(modelItem => item.StartTime)</td>
+                <td>@Html.DisplayFor(modelItem => item.EndTime)</td>
+                <td>@Html.DisplayFor(modelItem => item.MaxCapacity)</td>
+
+                <td>
+                    @{
+                        var now = DateTime.Now;
+                        var start = item.SessionDate.ToDateTime(item.StartTime);
+                        var end = item.SessionDate.ToDateTime(item.EndTime);
+
+                        string status;
+
+                        if (now < start)
+                        {
+                            status = "Scheduled";
+                        }
+                        else if (now >= start && now <= end)
+                        {
+                            status = "Ongoing";
+                        }
+                        else
+                        {
+                            status = "Completed";
+                        }
+                    }
+
+                    @if (status == "Scheduled")
+                    {
+                        <span class="badge bg-primary">Scheduled</span>
+                    }
+                    else if (status == "Ongoing")
+                    {
+                        <span class="badge bg-warning text-dark">Ongoing</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Completed</span>
+                    }
+                </td>
+
+                <td>@Html.DisplayFor(modelItem => item.Course.Title)</td>
+                <td>@Html.DisplayFor(modelItem => item.Instructor.FullName)</td>
+                <td>@Html.DisplayFor(modelItem => item.Room.RoomName)</td>
+
+                <td class="text-end">
+                    @if (User.IsInRole("TrainingCoordinator"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.SessionId" class="btn btn-sm btn-outline-primary">
+                            Edit
+                        </a>
+
+                        <a asp-action="Delete" asp-route-id="@item.SessionId" class="btn btn-sm btn-outline-danger">
+                            Delete
+                        </a>
+                    }
+
+                    <a asp-action="Details" asp-route-id="@item.SessionId" class="btn btn-sm btn-outline-dark">
+                        Details
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

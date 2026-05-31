@@ -1,0 +1,82 @@
+﻿@model TrainingAndCertificationPlatform.Models.Course
+
+@{
+    ViewData["Title"] = "Edit Course";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8 col-lg-7">
+
+        <div class="text-center mb-4">
+            <h1 class="fw-bold">Edit Course</h1>
+            <p class="text-muted">
+                Update course information, capacity, fee, subject, and prerequisites.
+            </p>
+        </div>
+
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <input type="hidden" asp-for="CourseId" />
+
+            <div class="mb-3">
+                <label asp-for="Title" class="form-label"></label>
+                <input asp-for="Title" class="form-control" placeholder="Enter course title" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label"></label>
+                <input asp-for="Description" class="form-control" placeholder="Enter course description" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="DurationHours" class="form-label"></label>
+                    <input asp-for="DurationHours" class="form-control" />
+                    <span asp-validation-for="DurationHours" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Capacity" class="form-label"></label>
+                    <input asp-for="Capacity" class="form-control" />
+                    <span asp-validation-for="Capacity" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Fee" class="form-label"></label>
+                    <input asp-for="Fee" class="form-control" />
+                    <span asp-validation-for="Fee" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SubjectId" class="form-label"></label>
+                <select asp-for="SubjectId" class="form-select" asp-items="ViewBag.SubjectId"></select>
+                <span asp-validation-for="SubjectId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="PrerequisiteCourseId" class="form-label"></label>
+                <select asp-for="PrerequisiteCourseId" class="form-select" asp-items="ViewBag.PrerequisiteCourseId"></select>
+                <span asp-validation-for="PrerequisiteCourseId" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-dark w-100 mb-3">
+                Save Changes
+            </button>
+
+            <a asp-action="Index" class="btn btn-outline-secondary w-100">
+                Back to Courses
+            </a>
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

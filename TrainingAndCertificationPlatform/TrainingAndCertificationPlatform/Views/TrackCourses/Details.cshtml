@@ -1,0 +1,64 @@
+﻿@model TrainingAndCertificationPlatform.Models.TrackCourse
+
+@{
+    ViewData["Title"] = "Track Course Details";
+}
+
+<div class="mt-4">
+
+    <div class="mb-4">
+
+        <h1 class="fw-bold">
+            Track Course Details
+        </h1>
+
+        <p class="text-muted">
+            View the course assigned to this certification track.
+        </p>
+
+    </div>
+
+    <div class="card shadow-sm p-4">
+
+        <div class="row mb-3">
+
+            <div class="col-md-3 fw-bold">
+                Course
+            </div>
+
+            <div class="col-md-9">
+                @Model.Course?.Title
+            </div>
+
+        </div>
+
+        <div class="row mb-4">
+
+            <div class="col-md-3 fw-bold">
+                Certification Track
+            </div>
+
+            <div class="col-md-9">
+                @Model.Track?.Name
+            </div>
+
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <a asp-action="Edit"
+               asp-route-id="@Model.Id"
+               class="btn btn-dark">
+                Edit Track Course
+            </a>
+
+            <a asp-action="Index"
+               class="btn btn-outline-secondary">
+                Back to Track Courses
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

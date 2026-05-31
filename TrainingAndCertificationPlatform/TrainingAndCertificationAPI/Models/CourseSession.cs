@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace TrainingAndCertificationPlatform.Models;
 
@@ -30,6 +32,7 @@ public partial class CourseSession
 
     [ForeignKey("CourseId")]
     [InverseProperty("CourseSessions")]
+    [ValidateNever]
     public virtual Course Course { get; set; } = null!;
 
     [InverseProperty("Session")]
@@ -37,9 +40,11 @@ public partial class CourseSession
 
     [ForeignKey("InstructorId")]
     [InverseProperty("CourseSessions")]
+    [ValidateNever]
     public virtual User Instructor { get; set; } = null!;
 
     [ForeignKey("RoomId")]
     [InverseProperty("CourseSessions")]
+    [ValidateNever]
     public virtual Room Room { get; set; } = null!;
 }

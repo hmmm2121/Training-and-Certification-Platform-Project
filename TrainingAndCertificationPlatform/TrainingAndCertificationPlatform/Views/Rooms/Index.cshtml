@@ -1,0 +1,84 @@
+﻿@model IEnumerable<TrainingAndCertificationPlatform.Models.Room>
+
+@{
+    ViewData["Title"] = "Rooms";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h1 class="fw-bold">Rooms</h1>
+
+        <p class="text-muted">
+            Manage training rooms and their capacities.
+        </p>
+    </div>
+
+    <a asp-action="Create" class="btn btn-dark">
+        + Add Room
+    </a>
+
+</div>
+
+<div class="card shadow-sm">
+
+    <div class="card-body">
+
+        <table class="table table-hover align-middle">
+
+            <thead class="table-light">
+
+                <tr>
+                    <th>Room Name</th>
+                    <th>Capacity</th>
+                    <th width="220">Actions</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+
+                        <td>
+                            @item.RoomName
+                        </td>
+
+                        <td>
+                            @item.Capacity
+                        </td>
+
+                        <td>
+
+                            <a asp-action="Edit"
+                               asp-route-id="@item.RoomId"
+                               class="btn btn-sm btn-outline-dark">
+                                Edit
+                            </a>
+
+                            <a asp-action="Details"
+                               asp-route-id="@item.RoomId"
+                               class="btn btn-sm btn-outline-primary">
+                                Details
+                            </a>
+
+                            <a asp-action="Delete"
+                               asp-route-id="@item.RoomId"
+                               class="btn btn-sm btn-outline-danger">
+                                Delete
+                            </a>
+
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

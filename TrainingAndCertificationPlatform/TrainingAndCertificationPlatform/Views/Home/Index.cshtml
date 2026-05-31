@@ -1,0 +1,48 @@
+﻿<div class="container mt-5">
+
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold">Training & Certification Platform</h1>
+
+        <p class="lead text-muted">
+            Manage courses, certifications, assessments, and trainee progress efficiently.
+        </p>
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-md-4">
+            <div class="card p-4 h-100 shadow-sm">
+                <h3>Courses</h3>
+                <p>Browse and manage available training courses.</p>
+
+                <a asp-controller="Courses" asp-action="Index" class="btn btn-dark">
+                    View Courses
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card p-4 h-100 shadow-sm">
+                <h3>Assessments</h3>
+                <p>Track trainee assessments and performance.</p>
+
+                <a asp-controller="Assessments" asp-action="Index" class="btn btn-dark">
+                    View Assessments
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card p-4 h-100 shadow-sm">
+                <h3>Certification Progress</h3>
+                <p>Monitor certification completion and trainee progress.</p>
+
+                <a asp-controller="CertificationProgress" asp-action="Index" class="btn btn-dark">
+                    View Progress
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</div>

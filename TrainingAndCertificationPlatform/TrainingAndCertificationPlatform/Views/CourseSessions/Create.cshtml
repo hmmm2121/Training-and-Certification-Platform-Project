@@ -1,0 +1,80 @@
+﻿@model TrainingAndCertificationPlatform.Models.CourseSession
+
+@{
+    ViewData["Title"] = "Create Course Session";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8 col-lg-7">
+
+        <div class="text-center mb-4">
+            <h1 class="fw-bold">Create Course Session</h1>
+            <p class="text-muted">
+                Schedule a new training session by selecting the course, instructor, room, date, and time.
+            </p>
+        </div>
+
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label class="form-label">Course</label>
+                <select asp-for="CourseId" class="form-select" asp-items="ViewBag.CourseId"></select>
+                <span asp-validation-for="CourseId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Instructor</label>
+                <select asp-for="InstructorId" class="form-select" asp-items="ViewBag.InstructorId"></select>
+                <span asp-validation-for="InstructorId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Room</label>
+                <select asp-for="RoomId" class="form-select" asp-items="ViewBag.RoomId"></select>
+                <span asp-validation-for="RoomId" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Session Date</label>
+                    <input asp-for="SessionDate" class="form-control" />
+                    <span asp-validation-for="SessionDate" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Start Time</label>
+                    <input asp-for="StartTime" class="form-control" />
+                    <span asp-validation-for="StartTime" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">End Time</label>
+                    <input asp-for="EndTime" class="form-control" />
+                    <span asp-validation-for="EndTime" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Max Capacity</label>
+                <input asp-for="MaxCapacity" class="form-control" />
+                <span asp-validation-for="MaxCapacity" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-dark w-100 mb-3">
+                Create Session
+            </button>
+
+            <a asp-action="Index" class="btn btn-outline-secondary w-100">
+                Back to Sessions
+            </a>
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

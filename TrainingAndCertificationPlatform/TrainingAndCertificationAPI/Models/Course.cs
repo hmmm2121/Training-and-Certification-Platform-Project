@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace TrainingAndCertificationPlatform.Models;
 
@@ -17,15 +18,19 @@ public partial class Course
     [StringLength(100)]
     public string? Description { get; set; }
 
+    [Range(1, int.MaxValue, ErrorMessage = "Duration must be at least 1 hour.")]
     public int DurationHours { get; set; }
 
+    [Range(1, int.MaxValue, ErrorMessage = "Capacity must be at least 1.")]
     public int Capacity { get; set; }
 
     [Column(TypeName = "decimal(10, 2)")]
     public decimal Fee { get; set; }
 
+    [Display(Name = "Subject")]
     public int SubjectId { get; set; }
 
+    [Display(Name = "Prerequisite Course")]
     public int? PrerequisiteCourseId { get; set; }
 
     [InverseProperty("Course")]
@@ -36,12 +41,15 @@ public partial class Course
 
     [ForeignKey("PrerequisiteCourseId")]
     [InverseProperty("InversePrerequisiteCourse")]
+    [ValidateNever]
     public virtual Course? PrerequisiteCourse { get; set; }
 
     [ForeignKey("SubjectId")]
     [InverseProperty("Courses")]
+    [ValidateNever]
     public virtual Subject Subject { get; set; } = null!;
 
     [InverseProperty("Course")]
+    [ValidateNever]
     public virtual ICollection<TrackCourse> TrackCourses { get; set; } = new List<TrackCourse>();
 }

@@ -1,0 +1,121 @@
+﻿@model TrainingAndCertificationPlatform.ViewModels.CertificationProgressViewModel?
+@{
+    ViewData["Title"] = "Certification Progress";
+}
+<div class="mb-4">
+    <h1 class="fw-bold">Certification Progress</h1>
+    <p class="text-muted">
+        Track trainee certification completion and course progress.
+    </p>
+</div>
+<form asp-action="Index" method="get" class="mb-5">
+    <div class="row">
+        @if (User.IsInRole("TrainingCoordinator"))
+        {
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold">
+                    Trainee
+                </label>
+                <select name="traineeId"
+                        class="form-select"
+                        asp-items="ViewBag.TraineeId">
+                    <option value="0">
+                        -- Select Trainee --
+                    </option>
+                </select>
+            </div>
+        }
+        <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">
+                Certification Track
+            </label>
+            <select name="trackId"
+                    class="form-select"
+                    asp-items="ViewBag.TrackId">
+                <option value="0">
+                    -- Select Track --
+                </option>
+            </select>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-dark">
+        View Progress
+    </button>
+</form>
+@if (Model == null)
+{
+    <div class="alert alert-info shadow-sm">
+        Select a certification track to view progress details.
+    </div>
+}
+else
+{
+    <div class="card p-4 mb-4">
+        <h3 class="fw-bold mb-3">
+            @Model.TraineeName
+        </h3>
+        <p>
+            <strong>Certification Track:</strong>
+            @Model.TrackName
+        </p>
+        @if (Model.IsEligible)
+        {
+            <div class="alert alert-success">
+                Eligible for certification!
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning">
+                Not eligible yet.
+            </div>
+        }
+    </div>
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card p-3 h-100">
+                <h5 class="fw-bold mb-3">
+                    Required Courses
+                </h5>
+                <ul class="list-group list-group-flush">
+                    @foreach (var course in Model.RequiredCourses)
+                    {
+                        <li class="list-group-item">
+                            @course
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card p-3 h-100">
+                <h5 class="fw-bold mb-3 text-success">
+                    Completed Courses
+                </h5>
+                <ul class="list-group list-group-flush">
+                    @foreach (var course in Model.CompletedCourses)
+                    {
+                        <li class="list-group-item text-success">
+                            @course
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card p-3 h-100">
+                <h5 class="fw-bold mb-3 text-danger">
+                    Missing Courses
+                </h5>
+                <ul class="list-group list-group-flush">
+                    @foreach (var course in Model.MissingCourses)
+                    {
+                        <li class="list-group-item text-danger">
+                            @course
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+}

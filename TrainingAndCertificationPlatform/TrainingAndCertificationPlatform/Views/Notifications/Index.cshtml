@@ -1,0 +1,69 @@
+﻿@model IEnumerable<TrainingAndCertificationPlatform.Models.Notification>
+
+@{
+    ViewData["Title"] = "Notifications";
+}
+
+<div class="mb-4">
+
+    <h1 class="fw-bold">Notifications</h1>
+
+    <p class="text-muted">
+        View system updates, reminders, and trainee notifications.
+    </p>
+
+</div>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-info shadow-sm">
+        You have no notifications.
+    </div>
+}
+else
+{
+    <div class="row">
+
+        @foreach (var notification in Model)
+        {
+            <div class="col-md-6 mb-4">
+
+                <div class="card p-3 h-100 shadow-sm
+                                            @(!notification.IsRead ? "border-warning" : "")">
+
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+
+                        <h5 class="fw-semibold mb-0">
+                            Notification
+                        </h5>
+
+                        <small class="text-muted">
+                            @notification.CreatedAt?.ToString("dd MMM yyyy, hh:mm tt")
+                        </small>
+
+                    </div>
+
+                    <p class="mb-3">
+                        @notification.Message
+                    </p>
+
+                    @if (!notification.IsRead)
+                    {
+                        <span class="badge bg-warning text-dark w-auto">
+                            New
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success w-auto">
+                            Read
+                        </span>
+                    }
+
+                </div>
+
+            </div>
+        }
+
+    </div>
+}

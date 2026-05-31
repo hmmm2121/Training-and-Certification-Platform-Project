@@ -1,0 +1,103 @@
+﻿@model IEnumerable<TrainingAndCertificationPlatform.Models.Assessment>
+
+@{
+    ViewData["Title"] = "Assessments";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h1 class="fw-bold">Assessments</h1>
+
+        <p class="text-muted">
+            Manage trainee assessments, results, and performance records.
+        </p>
+    </div>
+
+    <a asp-action="Create" class="btn btn-dark">
+        + Add Assessment
+    </a>
+
+</div>
+
+<table class="table table-hover align-middle">
+
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Result)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.Notes)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.RecordedAt)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.Enrollment)
+            </th>
+
+            <th class="text-end">
+                Actions
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+
+                <td>
+                    @if (item.Result == "Pass")
+                    {
+                        <span class="badge bg-success">Pass</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Fail</span>
+                    }
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Notes)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.RecordedAt)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Enrollment.EnrollmentId)
+                </td>
+
+                <td class="text-end">
+
+                    <a asp-action="Edit"
+                       asp-route-id="@item.AssessmentId"
+                       class="btn btn-sm btn-outline-primary">
+                        Edit
+                    </a>
+
+                    <a asp-action="Details"
+                       asp-route-id="@item.AssessmentId"
+                       class="btn btn-sm btn-outline-dark">
+                        Details
+                    </a>
+
+                    <a asp-action="Delete"
+                       asp-route-id="@item.AssessmentId"
+                       class="btn btn-sm btn-outline-danger">
+                        Delete
+                    </a>
+
+                </td>
+
+            </tr>
+        }
+    </tbody>
+
+</table>

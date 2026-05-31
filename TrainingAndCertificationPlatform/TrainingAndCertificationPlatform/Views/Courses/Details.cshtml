@@ -1,0 +1,108 @@
+﻿@model TrainingAndCertificationPlatform.Models.Course
+
+@{
+    ViewData["Title"] = "Course Details";
+}
+
+<div class="mt-4">
+
+    <div class="mb-4">
+        <h1 class="fw-bold">Course Details</h1>
+
+        <p class="text-muted">
+            View complete information about this training course.
+        </p>
+    </div>
+
+    <div class="card shadow-sm p-4">
+
+        <div class="row mb-3">
+            <div class="col-md-3 fw-bold">
+                Title
+            </div>
+
+            <div class="col-md-9">
+                @Model.Title
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-3 fw-bold">
+                Description
+            </div>
+
+            <div class="col-md-9">
+                @Model.Description
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-3 fw-bold">
+                Duration Hours
+            </div>
+
+            <div class="col-md-9">
+                @Model.DurationHours
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-3 fw-bold">
+                Capacity
+            </div>
+
+            <div class="col-md-9">
+                @Model.Capacity
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-3 fw-bold">
+                Fee
+            </div>
+
+            <div class="col-md-9">
+                @Model.Fee BD
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-3 fw-bold">
+                Prerequisite Course
+            </div>
+
+            <div class="col-md-9">
+                @(Model.PrerequisiteCourse != null
+                                ? Model.PrerequisiteCourse.Title
+                                : "None")
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-3 fw-bold">
+                Subject
+            </div>
+
+            <div class="col-md-9">
+                @Model.Subject?.Name
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <a asp-action="Edit"
+               asp-route-id="@Model.CourseId"
+               class="btn btn-dark">
+                Edit Course
+            </a>
+
+            <a asp-action="Index"
+               class="btn btn-outline-secondary">
+                Back to Courses
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

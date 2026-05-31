@@ -1,0 +1,102 @@
+﻿@model TrainingAndCertificationPlatform.Models.Enrollment
+
+@{
+    ViewData["Title"] = "Create Enrollment";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-7 col-lg-6">
+
+        <div class="text-center mb-4">
+
+            <h1 class="fw-bold">
+                Create Enrollment
+            </h1>
+
+            <p class="text-muted">
+                Enroll a trainee into a course session and set the enrollment status.
+            </p>
+
+        </div>
+
+        <form asp-action="Create">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger mb-3">
+            </div>
+
+            <div class="mb-3">
+
+                <label asp-for="TraineeId"
+                       class="form-label">
+                </label>
+
+                <select asp-for="TraineeId"
+                        class="form-select"
+                        asp-items="ViewBag.TraineeId">
+                    <option value="">-- Select Trainee --</option>
+                </select>
+
+                <span asp-validation-for="TraineeId"
+                      class="text-danger">
+                </span>
+
+            </div>
+
+            <div class="mb-3">
+
+                <label asp-for="SessionId"
+                       class="form-label">
+                </label>
+
+                <select asp-for="SessionId"
+                        class="form-select"
+                        asp-items="ViewBag.SessionId">
+                    <option value="">-- Select Session --</option>
+                </select>
+
+                <span asp-validation-for="SessionId"
+                      class="text-danger">
+                </span>
+
+            </div>
+
+            <div class="mb-4">
+
+                <label asp-for="Status"
+                       class="form-label">
+                </label>
+
+                <select asp-for="Status"
+                        class="form-select">
+                    <option value="Active">Active</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Withdrawn">Withdrawn</option>
+                </select>
+
+                <span asp-validation-for="Status"
+                      class="text-danger">
+                </span>
+
+            </div>
+
+            <button type="submit"
+                    class="btn btn-dark w-100 mb-3">
+                Create Enrollment
+            </button>
+
+            <a asp-action="Index"
+               class="btn btn-outline-secondary w-100">
+                Back to Enrollments
+            </a>
+
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
