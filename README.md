@@ -99,4 +99,5 @@ Log in with this account to access the reporting dashboard.
 
 - The reporting application has no direct access to the database and does not reference the API’s DbContext.
 - All reporting data is retrieved through the Web API using authenticated HTTP requests.
+-Made by Khalid Alateya 202300458
 - The reporting app is read-only and intended for internal use by the Training Coordinator.
