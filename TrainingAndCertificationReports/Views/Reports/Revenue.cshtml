@@ -1,0 +1,49 @@
+﻿@model RevenueReportViewModel
+
+@{
+    ViewData["Title"] = "Revenue Summary";
+}
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+else
+{
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="text-muted small">Total collected</div>
+                    <div class="h4 mb-0 text-success">
+                        @Model.TotalCollected.ToString("0.000")
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="text-muted small">Total outstanding</div>
+                    <div class="h4 mb-0 text-warning">
+                        @Model.TotalOutstanding.ToString("0.000")
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="text-muted small">Overdue payments</div>
+                    <div class="h4 mb-0 text-danger">
+                        @Model.OverduePayments
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-info">
+        This summary is based on all payments recorded in the system.
+    </div>
+}
