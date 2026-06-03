@@ -1,0 +1,153 @@
+﻿@model TrainingAndCertificationPlatform.ViewModels.CertificationLookupViewModel
+
+@{
+    ViewData["Title"] = "Certification Lookup";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8 col-lg-7">
+
+        <div class="text-center mb-4">
+
+            <h1 class="fw-bold">
+                Certification Lookup
+            </h1>
+
+            <p class="text-muted">
+                Verify a trainee certification by entering the Trainee ID and Certificate Reference Number.
+            </p>
+
+        </div>
+
+        <form asp-action="Index" method="post" class="mb-4">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger mb-3">
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert alert-danger shadow-sm">
+                    @Model.ErrorMessage
+                </div>
+            }
+
+            <div class="mb-3">
+
+                <label asp-for="TraineeId"
+                       class="form-label">
+                </label>
+
+                <input asp-for="TraineeId"
+                       class="form-control"
+                       placeholder="e.g. 1042" />
+
+                <span asp-validation-for="TraineeId"
+                      class="text-danger">
+                </span>
+
+            </div>
+
+            <div class="mb-4">
+
+                <label asp-for="CertificateRef"
+                       class="form-label">
+                </label>
+
+                <input asp-for="CertificateRef"
+                       class="form-control"
+                       placeholder="e.g. CERT-BH-2025-0001" />
+
+                <span asp-validation-for="CertificateRef"
+                      class="text-danger">
+                </span>
+
+            </div>
+
+            <button type="submit"
+                    class="btn btn-dark w-100">
+                Look Up Certification
+            </button>
+
+        </form>
+
+        @if (Model.Found == true)
+        {
+            <div class="card shadow-sm p-4 mb-4 border-success">
+
+                <div class="alert alert-success mb-4">
+                    Certification Verified
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Trainee Name</div>
+                    <div class="col-md-8">@Model.TraineeName</div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Track</div>
+                    <div class="col-md-8">@Model.TrackName</div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Certificate Ref</div>
+                    <div class="col-md-8">@Model.CertificateRef</div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Status</div>
+                    <div class="col-md-8">
+                        <span class="badge bg-@(Model.CertificationStatus == "Active" ? "success" : "secondary")">
+                            @Model.CertificationStatus
+                        </span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 fw-bold">Issued At</div>
+                    <div class="col-md-8">
+                        @(Model.IssuedAt.HasValue
+                                            ? Model.IssuedAt.Value.ToString("MMMM dd, yyyy")
+                                            : "—")
+                </div>
+            </div>
+
+            </div>
+
+        @if (Model.CompletedCourses != null && Model.CompletedCourses.Any())
+            {
+                <div class="card shadow-sm p-4 mb-4">
+
+                    <h5 class="fw-bold mb-3">
+                        Completed Courses
+                    </h5>
+
+                    <ul class="list-group list-group-flush">
+
+                        @foreach (var course in Model.CompletedCourses)
+                        {
+                            <li class="list-group-item">
+                                @course
+                            </li>
+                        }
+
+                    </ul>
+
+                </div>
+            }
+        }
+        else if (Model.Found == false)
+        {
+            <div class="alert alert-warning shadow-sm">
+                No certification record was found for the provided details.
+            </div>
+        }
+
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
