@@ -1,0 +1,86 @@
+﻿@model IEnumerable<TrainingAndCertificationPlatform.Models.Course>
+
+@{
+    ViewData["Title"] = "Courses";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h1 class="fw-bold">Courses</h1>
+        <p class="text-muted">Manage and browse available training courses.</p>
+    </div>
+
+    @if (User.IsInRole("TrainingCoordinator"))
+    {
+        <a asp-action="Create" class="btn btn-dark">
+            + Add Course
+        </a>
+    }
+
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+<table class="table table-hover align-middle">
+    <thead class="table-light">
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Title)</th>
+            <th>@Html.DisplayNameFor(model => model.Description)</th>
+            <th>@Html.DisplayNameFor(model => model.DurationHours)</th>
+            <th>@Html.DisplayNameFor(model => model.Capacity)</th>
+            <th>@Html.DisplayNameFor(model => model.Fee)</th>
+            <th>@Html.DisplayNameFor(model => model.PrerequisiteCourse)</th>
+            <th>@Html.DisplayNameFor(model => model.Subject)</th>
+            <th class="text-end">Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="8" class="text-center text-muted py-4">
+                    No courses yet.
+                </td>
+            </tr>
+        }
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                <td>@Html.DisplayFor(modelItem => item.DurationHours)</td>
+                <td>@Html.DisplayFor(modelItem => item.Capacity)</td>
+                <td>@Html.DisplayFor(modelItem => item.Fee)</td>
+                <td>@Html.DisplayFor(modelItem => item.PrerequisiteCourse.Title)</td>
+                <td>@Html.DisplayFor(modelItem => item.Subject.Name)</td>
+
+                <td class="text-end">
+                    @if (User.IsInRole("TrainingCoordinator"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.CourseId" class="btn btn-sm btn-outline-primary">
+                            Edit
+                        </a>
+                    }
+
+                    <a asp-action="Details" asp-route-id="@item.CourseId" class="btn btn-sm btn-outline-dark">
+                        Details
+                    </a>
+
+                    @if (User.IsInRole("TrainingCoordinator"))
+                    {
+                        <a asp-action="Delete" asp-route-id="@item.CourseId" class="btn btn-sm btn-outline-danger">
+                            Delete
+                        </a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+    </div>
+</div>

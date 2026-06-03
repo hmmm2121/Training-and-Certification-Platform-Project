@@ -1,0 +1,118 @@
+﻿@inject ApiAuthService AuthService
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - Training Reports</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/TrainingAndCertificationReports.styles.css" asp-append-version="true" />
+</head>
+<body>
+    @if (AuthService.HasToken())
+    {
+        <header>
+            <nav class="navbar navbar-expand-xl navbar-light bg-white border-bottom shadow-sm mb-3 theme-navbar">
+                <div class="container-fluid px-4">
+                    <a class="navbar-brand fw-bold" asp-controller="Reports" asp-action="EnrollmentStats">
+                        Training Reports
+                    </a>
+
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarReports"
+                            aria-controls="navbarReports" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarReports">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Reports" asp-action="EnrollmentStats">Enrollment</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Reports" asp-action="InstructorWorkload">Instructors</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Reports" asp-action="Revenue">Revenue</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Reports" asp-action="CertificationRates">Certifications</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Reports" asp-action="CoursePopularity">Courses</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Reports" asp-action="RoomUtilization">Rooms</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Reports" asp-action="TraineePayments">Trainee Payments</a>
+                            </li>
+                        </ul>
+
+                        <ul class="navbar-nav ms-auto gap-2 align-items-xl-center">
+                            <li class="nav-item">
+                                <button id="themeToggle" type="button" class="btn btn-sm btn-outline-dark">
+                                    Dark / Light
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <span class="navbar-text text-dark small">
+                                    Training Coordinator
+                                </span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Logout">
+                                    Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+    }
+
+    <div class="container-fluid px-5 mt-3">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted theme-footer">
+        <div class="container-fluid px-5">
+            &copy; 2026 - Training &amp; Certification Platform
+        </div>
+    </footer>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+            (function () {
+                const body = document.body;
+                const key = "theme";
+
+                // Apply saved theme
+                const saved = localStorage.getItem(key);
+                if (saved === "dark") {
+                    body.classList.add("dark-mode");
+                }
+
+                const btn = document.getElementById("themeToggle");
+                if (!btn) return;
+
+                btn.addEventListener("click", function () {
+                    if (body.classList.contains("dark-mode")) {
+                        body.classList.remove("dark-mode");
+                        localStorage.setItem(key, "light");
+                    } else {
+                        body.classList.add("dark-mode");
+                        localStorage.setItem(key, "dark");
+                    }
+                });
+            })();
+    </script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

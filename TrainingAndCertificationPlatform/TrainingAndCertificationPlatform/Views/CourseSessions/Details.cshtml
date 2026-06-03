@@ -1,0 +1,196 @@
+﻿@model TrainingAndCertificationPlatform.Models.CourseSession
+
+@{
+    ViewData["Title"] = "Course Session Details";
+}
+
+<div class="mt-4">
+
+    <div class="mb-4">
+
+        <h1 class="fw-bold">
+            Course Session Details
+        </h1>
+
+        <p class="text-muted">
+            View complete information about this training session.
+        </p>
+
+    </div>
+
+    <div class="card shadow-sm p-4">
+
+        <div class="row mb-3">
+
+            <div class="col-md-3 fw-bold">
+                Session Date
+            </div>
+
+            <div class="col-md-9">
+                @Model.SessionDate
+            </div>
+
+        </div>
+
+        <div class="row mb-3">
+
+            <div class="col-md-3 fw-bold">
+                Start Time
+            </div>
+
+            <div class="col-md-9">
+                @Model.StartTime
+            </div>
+
+        </div>
+
+        <div class="row mb-3">
+
+            <div class="col-md-3 fw-bold">
+                End Time
+            </div>
+
+            <div class="col-md-9">
+                @Model.EndTime
+            </div>
+
+        </div>
+
+        <div class="row mb-3">
+
+            <div class="col-md-3 fw-bold">
+                Max Capacity
+            </div>
+
+            <div class="col-md-9">
+                @Model.MaxCapacity
+            </div>
+
+        </div>
+
+        <div class="row mb-3">
+
+            <div class="col-md-3 fw-bold">
+                Spots Remaining
+            </div>
+
+            <div class="col-md-9">
+                @* this number updates live through SignalR when trainees enroll or drop *@
+                <span id="spotsRemaining" class="badge text-dark fs-6">
+                    @ViewBag.SpotsLeft
+                </span>
+            </div>
+
+        </div>
+
+        <div class="row mb-3">
+
+            <div class="col-md-3 fw-bold">
+                Status
+            </div>
+
+            <div class="col-md-9">
+
+                @if (Model.Status == "Scheduled")
+                {
+                    <span class="badge bg-primary">
+                        Scheduled
+                    </span>
+                }
+                else if (Model.Status == "Ongoing")
+                {
+                    <span class="badge bg-warning text-dark">
+                        Ongoing
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-success">
+                        Completed
+                    </span>
+                }
+
+            </div>
+
+        </div>
+
+        <div class="row mb-3">
+
+            <div class="col-md-3 fw-bold">
+                Course
+            </div>
+
+            <div class="col-md-9">
+                @Model.Course?.Title
+            </div>
+
+        </div>
+
+        <div class="row mb-3">
+
+            <div class="col-md-3 fw-bold">
+                Instructor
+            </div>
+
+            <div class="col-md-9">
+                @Model.Instructor?.FullName
+            </div>
+
+        </div>
+
+        <div class="row mb-4">
+
+            <div class="col-md-3 fw-bold">
+                Room
+            </div>
+
+            <div class="col-md-9">
+                @Model.Room?.RoomName
+            </div>
+
+        </div>
+
+        <div class="d-flex gap-2">
+
+            @if (User.IsInRole("TrainingCoordinator"))
+            {
+                <a asp-action="Edit"
+                   asp-route-id="@Model.SessionId"
+                   class="btn btn-dark">
+                    Edit Session
+                </a>
+            }
+
+            <a asp-action="Index"
+               class="btn btn-outline-secondary">
+                Back to Sessions
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        // build the connection to our enrollment hub (mapped in Program.cs)
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/hubs/enrollment")
+            .build();
+
+        // when the server tells us the spots changed, update the number on the page
+        connection.on("SpotsUpdated", function (data) {
+            document.getElementById("spotsRemaining").textContent = data.spotsLeft;
+        });
+
+        // start the connection, then join the group for this session only
+        connection.start()
+            .then(function () {
+                return connection.invoke("JoinSession", @Model.SessionId);
+            })
+            .catch(function (err) {
+                console.error(err);
+            });
+    </script>
+}

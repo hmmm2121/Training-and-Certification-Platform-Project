@@ -1,0 +1,114 @@
+﻿@model TrainingAndCertificationPlatform.Models.Assessment
+
+@{
+    ViewData["Title"] = "Edit Assessment";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8 col-lg-7">
+
+        <div class="text-center mb-4">
+
+            <h1 class="fw-bold">
+                Edit Assessment
+            </h1>
+
+            <p class="text-muted">
+                Update trainee assessment results and notes.
+            </p>
+
+        </div>
+
+        <form asp-action="Edit">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger mb-3">
+            </div>
+
+            <input type="hidden" asp-for="AssessmentId" />
+
+            <div class="mb-3">
+
+                <label asp-for="EnrollmentId"
+                       class="form-label">
+                </label>
+
+                <select asp-for="EnrollmentId"
+                        class="form-select"
+                        asp-items="ViewBag.EnrollmentId">
+                </select>
+
+                <span asp-validation-for="EnrollmentId"
+                      class="text-danger">
+                </span>
+
+            </div>
+
+            <div class="mb-3">
+
+                <label asp-for="Result"
+                       class="form-label">
+                </label>
+
+                <select asp-for="Result"
+                        class="form-select"
+                        asp-items="ViewBag.Result">
+                </select>
+
+                <span asp-validation-for="Result"
+                      class="text-danger">
+                </span>
+
+            </div>
+
+            <div class="mb-3">
+
+                <label asp-for="Notes"
+                       class="form-label">
+                </label>
+
+                <input asp-for="Notes"
+                       class="form-control"
+                       placeholder="Enter assessment notes" />
+
+                <span asp-validation-for="Notes"
+                      class="text-danger">
+                </span>
+
+            </div>
+
+            <div class="mb-4">
+
+                <label asp-for="RecordedAt"
+                       class="form-label">
+                </label>
+
+                <input asp-for="RecordedAt"
+                       class="form-control" />
+
+                <span asp-validation-for="RecordedAt"
+                      class="text-danger">
+                </span>
+
+            </div>
+
+            <button type="submit"
+                    class="btn btn-dark w-100 mb-3">
+                Save Changes
+            </button>
+
+            <a asp-action="Index"
+               class="btn btn-outline-secondary w-100">
+                Back to Assessments
+            </a>
+
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

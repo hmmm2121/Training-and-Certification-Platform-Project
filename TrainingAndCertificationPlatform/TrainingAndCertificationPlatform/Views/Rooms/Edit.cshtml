@@ -1,0 +1,81 @@
+﻿@model TrainingAndCertificationPlatform.Models.Room
+
+@{
+    ViewData["Title"] = "Edit Room";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-7 col-lg-6">
+
+        <div class="text-center mb-4">
+
+            <h1 class="fw-bold">
+                Edit Room
+            </h1>
+
+            <p class="text-muted">
+                Update room details and capacity.
+            </p>
+
+        </div>
+
+        <form asp-action="Edit">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger mb-3">
+            </div>
+
+            <input type="hidden" asp-for="RoomId" />
+
+            <div class="mb-3">
+
+                <label asp-for="RoomName"
+                       class="form-label">
+                </label>
+
+                <input asp-for="RoomName"
+                       class="form-control"
+                       placeholder="Enter room name" />
+
+                <span asp-validation-for="RoomName"
+                      class="text-danger">
+                </span>
+
+            </div>
+
+            <div class="mb-4">
+
+                <label asp-for="Capacity"
+                       class="form-label">
+                </label>
+
+                <input asp-for="Capacity"
+                       class="form-control"
+                       placeholder="Enter room capacity" />
+
+                <span asp-validation-for="Capacity"
+                      class="text-danger">
+                </span>
+
+            </div>
+
+            <button type="submit"
+                    class="btn btn-dark w-100 mb-3">
+                Save Changes
+            </button>
+
+            <a asp-action="Index"
+               class="btn btn-outline-secondary w-100">
+                Back to Rooms
+            </a>
+
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

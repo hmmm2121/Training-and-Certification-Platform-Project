@@ -1,0 +1,74 @@
+﻿@model List<InstructorWorkloadViewModel>
+
+@{
+    ViewData["Title"] = "Instructor Workload";
+}
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+else if (!Model.Any())
+{
+    <div class="alert alert-info">No instructor workload data available.</div>
+}
+else
+{
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="text-muted small">Total instructors</div>
+                    <div class="h4 mb-0">@Model.Count</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="text-muted small">Total sessions</div>
+                    <div class="h4 mb-0">
+                        @Model.Sum(x => x.SessionsTaught)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="text-muted small">Total trainees taught</div>
+                    <div class="h4 mb-0">
+                        @Model.Sum(x => x.TotalTraineesTaught)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white">
+            <strong>Instructor workload</strong>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Instructor</th>
+                        <th class="text-end">Sessions taught</th>
+                        <th class="text-end">Total trainees</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Instructor</td>
+                            <td class="text-end">@item.SessionsTaught</td>
+                            <td class="text-end">@item.TotalTraineesTaught</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

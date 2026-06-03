@@ -1,0 +1,183 @@
+/* ---------- Base layout / Bootstrap tweaks ---------- */
+
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+}
+
+/* Focus styles */
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+/* Floating labels */
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
+    color: var(--bs-secondary-color);
+    text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
+    text-align: start;
+}
+
+/* Base dark mode */
+body.dark-mode {
+    background-color: #121212 !important;
+    color: #e0e0e0 !important;
+}
+
+    /* All headings and regular text */
+    body.dark-mode h1,
+    body.dark-mode h2,
+    body.dark-mode h3,
+    body.dark-mode h4,
+    body.dark-mode h5,
+    body.dark-mode h6,
+    body.dark-mode p,
+    body.dark-mode span,
+    body.dark-mode label,
+    body.dark-mode small,
+    body.dark-mode li,
+    body.dark-mode div {
+        color: #e0e0e0 !important;
+    }
+
+    /* Links */
+    body.dark-mode a {
+        color: #90caf9 !important;
+    }
+
+        body.dark-mode a:hover {
+            color: #e3f2fd !important;
+        }
+
+    /* Navbar (theme-navbar class) */
+    body.dark-mode .theme-navbar {
+        background-color: #1f1f1f !important;
+        border-bottom-color: #2c2c2c !important;
+    }
+
+        body.dark-mode .theme-navbar .navbar-brand,
+        body.dark-mode .theme-navbar .nav-link,
+        body.dark-mode .theme-navbar .navbar-text {
+            color: #e0e0e0 !important;
+        }
+
+    /* Footer border in dark mode (matches navbar) */
+    body.dark-mode .theme-footer {
+        border-top-color: #2c2c2c !important;
+        background-color: #1f1f1f !important;
+    }
+
+    /* Cards and their text */
+    body.dark-mode .card {
+        background-color: #1e1e1e !important;
+        color: #e0e0e0 !important;
+        border-color: #2c2c2c !important;
+    }
+
+    body.dark-mode .card-header,
+    body.dark-mode .card-body,
+    body.dark-mode .card-body .text-muted,
+    body.dark-mode .card-body .small {
+        color: #e0e0e0 !important;
+    }
+
+    /* Tables (already working but kept for completeness) */
+    body.dark-mode table.table {
+        color: #e0e0e0 !important;
+        border-color: #2c2c2c !important;
+        background-color: #1e1e1e !important;
+    }
+
+        body.dark-mode table.table thead {
+            background-color: #252525 !important;
+            color: #e0e0e0 !important;
+        }
+
+            body.dark-mode table.table thead th {
+                background-color: #252525 !important;
+                color: #e0e0e0 !important;
+                border-color: #2c2c2c !important;
+            }
+
+        body.dark-mode table.table tbody tr td {
+            color: #e0e0e0 !important;
+            border-color: #2c2c2c !important;
+            background-color: #1e1e1e !important;
+        }
+
+    /* Alerts */
+    body.dark-mode .alert-info {
+        background-color: #1d3557 !important;
+        border-color: #1d3557 !important;
+        color: #e0f2ff !important;
+    }
+
+    body.dark-mode .alert-danger {
+        background-color: #3d0202 !important;
+        border-color: #5b0505 !important;
+        color: #ffb3b3 !important;
+    }
+
+    /* Forms */
+    body.dark-mode input,
+    body.dark-mode select,
+    body.dark-mode textarea {
+        background-color: #1e1e1e !important;
+        color: #e0e0e0 !important;
+        border-color: #3a3a3a !important;
+    }
+
+        body.dark-mode input::placeholder,
+        body.dark-mode textarea::placeholder {
+            color: #9e9e9e !important;
+        }
+
+    /* Buttons */
+    body.dark-mode .btn-outline-secondary {
+        color: #e0e0e0 !important;
+        border-color: #e0e0e0 !important;
+    }
+
+        body.dark-mode .btn-outline-secondary:hover {
+            background-color: #e0e0e0 !important;
+            color: #121212 !important;
+        }
+
+    body.dark-mode .btn-primary {
+        background-color: #1976d2 !important;
+        border-color: #1976d2 !important;
+    }
+    /* Card headers (including ones with bg-white) */
+    body.dark-mode .card-header {
+        background-color: #252525 !important;
+        border-bottom-color: #2c2c2c !important;
+        color: #e0e0e0 !important;
+    }
+
+        /* Override Bootstrap bg-white in dark mode */
+        body.dark-mode .card-header.bg-white {
+            background-color: #252525 !important;
+            color: #e0e0e0 !important;
+        }

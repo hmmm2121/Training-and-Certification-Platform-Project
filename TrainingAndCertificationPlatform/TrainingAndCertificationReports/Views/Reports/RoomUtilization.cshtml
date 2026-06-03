@@ -1,0 +1,35 @@
+﻿@model List<RoomUtilizationViewModel>
+
+@{
+    ViewData["Title"] = "Room Utilization";
+}
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+else if (!Model.Any())
+{
+    <div class="alert alert-info">No room utilization data available.</div>
+}
+else
+{
+    <div class="row mb-4">
+        @foreach (var room in Model)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title mb-1">@room.RoomName</h5>
+                        <div class="text-muted small mb-2">
+                            Capacity: @room.Capacity
+                        </div>
+                        <div class="fw-semibold">
+                            Sessions hosted: @room.TotalSessionsHosted
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

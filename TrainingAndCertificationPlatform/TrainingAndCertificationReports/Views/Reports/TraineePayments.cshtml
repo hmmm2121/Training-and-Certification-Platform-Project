@@ -1,0 +1,46 @@
+﻿@model List<TraineePaymentViewModel>
+
+@{
+    ViewData["Title"] = "Trainee Payments";
+}
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+else if (!Model.Any())
+{
+    <div class="alert alert-info">No payment data available.</div>
+}
+else
+{
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white">
+            <strong>Payments by trainee</strong>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Trainee</th>
+                        <th class="text-end">Total paid</th>
+                        <th class="text-end">Outstanding</th>
+                        <th class="text-end">Overdue count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        var hasOutstanding = item.TotalOutstanding > 0 || item.OverdueCount > 0;
+                        <tr class="@(hasOutstanding ? "table-warning" : "")">
+                            <td>@item.TraineeName</td>
+                            <td class="text-end">@item.TotalPaid.ToString("0.000")</td>
+                            <td class="text-end">@item.TotalOutstanding.ToString("0.000")</td>
+                            <td class="text-end">@item.OverdueCount</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

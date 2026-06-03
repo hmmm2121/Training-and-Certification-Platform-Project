@@ -1,0 +1,183 @@
+﻿@model IEnumerable<TrainingAndCertificationPlatform.Models.Payment>
+
+@{
+    ViewData["Title"] = "Payment History";
+    var trainee = ViewBag.Trainee;
+}
+
+<div class="mb-4">
+
+    <h1 class="fw-bold">
+        Payment History
+    </h1>
+
+    <p class="text-muted">
+        View payment summary and payment records for @trainee.FullName.
+    </p>
+
+</div>
+
+<div class="row mb-4">
+
+    <div class="col-md-4 mb-3">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-body">
+
+                <h6 class="text-muted">
+                    Total Fees
+                </h6>
+
+                <p class="fs-4 fw-bold mb-0">
+                    @((decimal)ViewBag.TotalFees).ToString("C")
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4 mb-3">
+
+        <div class="card shadow-sm h-100 border-success">
+
+            <div class="card-body">
+
+                <h6 class="text-muted">
+                    Total Paid
+                </h6>
+
+                <p class="fs-4 fw-bold text-success mb-0">
+                    @((decimal)ViewBag.TotalPaid).ToString("C")
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4 mb-3">
+
+        <div class="card shadow-sm h-100 @((decimal)ViewBag.Outstanding > 0 ? "border-danger" : "border-success")">
+
+            <div class="card-body">
+
+                <h6 class="text-muted">
+                    Outstanding Balance
+                </h6>
+
+                <p class="fs-4 fw-bold @((decimal)ViewBag.Outstanding > 0 ? "text-danger" : "text-success") mb-0">
+                    @((decimal)ViewBag.Outstanding).ToString("C")
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info shadow-sm">
+        No payment records found for this trainee.
+    </div>
+}
+else
+{
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <table class="table table-hover align-middle">
+
+                <thead class="table-light">
+
+                    <tr>
+                        <th>Course</th>
+                        <th>Amount</th>
+                        <th>Due Date</th>
+                        <th>Paid At</th>
+                        <th>Status</th>
+                        <th width="120">Actions</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr class="@(item.IsOverdue ? "table-danger" : "")">
+
+                            <td>
+                                @item.Enrollment.Session.Course.Title
+                            </td>
+
+                            <td>
+                                @item.Amount.ToString("C")
+                            </td>
+
+                            <td>
+                                @item.DueDate.ToString("dd/MM/yyyy")
+                            </td>
+
+                            <td>
+                                @(item.PaidAt.HasValue
+                                                        ? item.PaidAt.Value.ToString("g")
+                                                        : "—")
+                    </td>
+
+                            <td>
+                        @if (item.PaidAt.HasValue)
+                                {
+                                    <span class="badge bg-success">
+                                        Paid
+                                    </span>
+                                }
+                                else if (item.IsOverdue)
+                                {
+                                    <span class="badge bg-danger">
+                                        Overdue
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">
+                                        Pending
+                                    </span>
+                                }
+                            </td>
+
+                            <td>
+                                <a asp-action="Details"
+                                   asp-route-id="@item.PaymentId"
+                                   class="btn btn-sm btn-outline-primary">
+                                    Details
+                                </a>
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+}
+
+<div class="mt-4">
+
+    <a asp-action="Index"
+       class="btn btn-outline-secondary">
+        Back to All Payments
+    </a>
+
+</div>

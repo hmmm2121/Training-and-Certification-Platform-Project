@@ -1,0 +1,160 @@
+﻿@model IEnumerable<TrainingAndCertificationPlatform.Models.CourseSession>
+
+@{
+    ViewData["Title"] = "Course Sessions";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h1 class="fw-bold">Course Sessions</h1>
+        <p class="text-muted">Manage scheduled training sessions, instructors, rooms, and session status.</p>
+    </div>
+
+    @if (User.IsInRole("TrainingCoordinator"))
+    {
+        <a asp-action="Create" class="btn btn-dark">
+            + Add Session
+        </a>
+    }
+
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+<table class="table table-hover align-middle">
+    <thead class="table-light">
+        <tr>
+            <th>Session Date</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Max Capacity</th>
+            <th>Spots Left</th>
+            <th>Status</th>
+            <th>Course</th>
+            <th>Instructor</th>
+            <th>Room</th>
+            <th class="text-end">Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="10" class="text-center text-muted py-4">
+                    No course sessions yet.
+                </td>
+            </tr>
+        }
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.SessionDate)</td>
+                <td>@Html.DisplayFor(modelItem => item.StartTime)</td>
+                <td>@Html.DisplayFor(modelItem => item.EndTime)</td>
+                <td>@Html.DisplayFor(modelItem => item.MaxCapacity)</td>
+
+                <td>
+                    @* this number updates live through SignalR when trainees enroll or drop *@
+                    <span id="spots-@item.SessionId" class="badge text-dark">
+                        @(((Dictionary<int, int>)ViewBag.SpotsLeft)[item.SessionId])
+                    </span>
+                </td>
+
+                <td>
+                    @{
+                        var now = DateTime.Now;
+                        var start = item.SessionDate.ToDateTime(item.StartTime);
+                        var end = item.SessionDate.ToDateTime(item.EndTime);
+
+                        string status;
+
+                        if (now < start)
+                        {
+                            status = "Scheduled";
+                        }
+                        else if (now >= start && now <= end)
+                        {
+                            status = "Ongoing";
+                        }
+                        else
+                        {
+                            status = "Completed";
+                        }
+                    }
+
+                    @if (status == "Scheduled")
+                    {
+                        <span class="badge bg-primary">Scheduled</span>
+                    }
+                    else if (status == "Ongoing")
+                    {
+                        <span class="badge bg-warning text-dark">Ongoing</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Completed</span>
+                    }
+                </td>
+
+                <td>@Html.DisplayFor(modelItem => item.Course.Title)</td>
+                <td>@Html.DisplayFor(modelItem => item.Instructor.FullName)</td>
+                <td>@Html.DisplayFor(modelItem => item.Room.RoomName)</td>
+
+                <td class="text-end">
+                    @if (User.IsInRole("TrainingCoordinator"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.SessionId" class="btn btn-sm btn-outline-primary">
+                            Edit
+                        </a>
+
+                        <a asp-action="Delete" asp-route-id="@item.SessionId" class="btn btn-sm btn-outline-danger">
+                            Delete
+                        </a>
+                    }
+
+                    <a asp-action="Details" asp-route-id="@item.SessionId" class="btn btn-sm btn-outline-dark">
+                        Details
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // build the connection to our enrollment hub (mapped in Program.cs)
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/hubs/enrollment")
+            .build();
+
+        // when the server says a session's spots changed, update that row's badge
+        connection.on("SpotsUpdated", function (data) {
+            const badge = document.getElementById("spots-" + data.sessionId);
+            if (badge) {
+                badge.textContent = data.spotsLeft;
+            }
+        });
+
+        // all the session ids shown in this table
+        const sessionIds = [@Html.Raw(string.Join(",", Model.Select(s => s.SessionId)))];
+
+        // start the connection, then join the group for every session on the page
+        connection.start()
+            .then(function () {
+                sessionIds.forEach(function (id) {
+                    connection.invoke("JoinSession", id);
+                });
+            })
+            .catch(function (err) {
+                console.error(err);
+            });
+    </script>
+}
