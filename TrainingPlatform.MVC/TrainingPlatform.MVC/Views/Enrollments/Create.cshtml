@@ -1,0 +1,83 @@
+﻿@model TrainingPlatform.MVC.Models.Enrollment
+
+@{
+    ViewData["Title"] = "Create Enrollment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>New Enrollment</h2>
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+    <div class="card mt-3">
+        <div class="card-body">
+            <form asp-action="Create" asp-controller="Enrollments" method="post">
+                @Html.AntiForgeryToken()
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger">
+                        @foreach (var error in ViewData.ModelState.Values
+                                            .SelectMany(v => v.Errors))
+                        {
+                            <p>@error.ErrorMessage</p>
+                        }
+                    </div>
+                }
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Trainee</label>
+                    <select name="TraineeId" class="form-select" required>
+                        <option value="">-- Select Trainee --</option>
+                        @foreach (var item in (SelectList)ViewData["TraineeId"])
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                    <div class="invalid-feedback">Please select a trainee.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Course Session</label>
+                    <select name="SessionId" class="form-select" required>
+                        <option value="">-- Select Session --</option>
+                        @foreach (var item in (SelectList)ViewData["SessionId"])
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                    <div class="invalid-feedback">Please select a session.</div>
+                </div>
+
+                <button type="submit" class="btn btn-success">Enroll</button>
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Bootstrap client-side validation
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('form')
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+    </script>
+}

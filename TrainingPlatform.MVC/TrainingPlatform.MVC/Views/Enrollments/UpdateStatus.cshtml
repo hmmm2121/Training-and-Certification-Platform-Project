@@ -1,0 +1,77 @@
+﻿@model TrainingPlatform.MVC.Models.Enrollment
+
+@{
+    ViewData["Title"] = "Update Enrollment Status";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>Update Enrollment Status</h2>
+
+    <div class="card mt-3">
+        <div class="card-body">
+            <table class="table table-borderless">
+                <tr>
+                    <th>Trainee</th>
+                    <td>@Model.Trainee.FullName</td>
+                </tr>
+                <tr>
+                    <th>Course</th>
+                    <td>@Model.Session.Course.Title</td>
+                </tr>
+                <tr>
+                    <th>Current Status</th>
+                    <td>
+                        <span class="badge bg-primary">@Model.Status</span>
+                    </td>
+                </tr>
+            </table>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    @foreach (var error in ViewData.ModelState.Values
+                                    .SelectMany(v => v.Errors))
+                    {
+                        <p>@error.ErrorMessage</p>
+                    }
+                </div>
+            }
+
+            <form asp-action="UpdateStatus" method="post" class="mt-3">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.EnrollmentId" />
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">New Status</label>
+                    <select name="newStatus" class="form-select" required>
+                        <option value="">-- Select New Status --</option>
+
+                        @if (Model.Status == "Enrolled")
+                        {
+                            <option value="Confirmed">Confirmed</option>
+                            <option value="Dropped">Dropped</option>
+                        }
+                        else if (Model.Status == "Confirmed")
+                        {
+                            <option value="Attending">Attending</option>
+                            <option value="Dropped">Dropped</option>
+                        }
+                        else if (Model.Status == "Attending")
+                        {
+                            <option value="Completed">Completed</option>
+                            <option value="Dropped">Dropped</option>
+                        }
+                        else
+                        {
+                            <option disabled>No further transitions available</option>
+                        }
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-warning">Update Status</button>
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>

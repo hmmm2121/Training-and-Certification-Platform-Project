@@ -1,0 +1,79 @@
+﻿@model IEnumerable<TrainingPlatform.MVC.Models.Enrollment>
+
+@{
+    ViewData["Title"] = "Enrollments";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>Enrollments</h2>
+
+    <a asp-action="Create" class="btn btn-primary mb-3">New Enrollment</a>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Trainee</th>
+                <th>Course</th>
+                <th>Instructor</th>
+                <th>Session Date</th>
+                <th>Enrolled At</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var enrollment in Model)
+            {
+                <tr>
+                    <td>@enrollment.Trainee.FullName</td>
+                    <td>@enrollment.Session.Course.Title</td>
+                    <td>@enrollment.Session.Instructor.FullName</td>
+                    <td>@enrollment.Session.SessionDate.ToString("dd MMM yyyy")</td>
+                    <td>@enrollment.EnrolledAt?.ToString("dd MMM yyyy")</td>
+                    <td>
+                        @switch (enrollment.Status)
+                        {
+                            case "Enrolled":
+                                <span class="badge bg-primary">Enrolled</span>
+                                break;
+                            case "Confirmed":
+                                <span class="badge bg-info">Confirmed</span>
+                                break;
+                            case "Attending":
+                                <span class="badge bg-warning">Attending</span>
+                                break;
+                            case "Completed":
+                                <span class="badge bg-success">Completed</span>
+                                break;
+                            case "Dropped":
+                                <span class="badge bg-danger">Dropped</span>
+                                break;
+                            default:
+                                <span class="badge bg-secondary">@enrollment.Status</span>
+                                break;
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@enrollment.EnrollmentId"
+                           class="btn btn-sm btn-info">Details</a>
+                        <a asp-action="UpdateStatus" asp-route-id="@enrollment.EnrollmentId"
+                           class="btn btn-sm btn-warning">Update Status</a>
+                        <a asp-action="Delete" asp-route-id="@enrollment.EnrollmentId"
+                           class="btn btn-sm btn-danger">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
